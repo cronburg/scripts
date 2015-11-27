@@ -1,0 +1,18 @@
+#!/usr/bin/python
+# 2015-08-20 13:12:04.724481324 -0400 (TODO: find original timestamp? oh well.)
+import zlib
+import sys
+import pickle
+import os
+
+msg = []
+for arg in sys.argv[1:]:
+	msg.append(zlib.compress(arg))
+
+loc = os.environ["_TMPACK_DAT_DUMP"]
+fp = open(loc, 'r')
+multi = pickle.loads(zlib.decompress(fp.read())) + [[msg]]
+fp.close()
+pickle.dump(msg, zlib.compress(open(loc, 'w')))
+print "Dumped it"
+

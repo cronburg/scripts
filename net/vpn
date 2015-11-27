@@ -1,0 +1,2 @@
+#!/bin/bash
+(cd /etc/openvpn && sudo /usr/bin/openvpn client.conf)

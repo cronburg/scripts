@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# MIT PGP server way:
+gpg --keyserver pgpkeys.mit.edu --recv-key $1
+gpg -a --export $1 | sudo apt-key add -
+
+## Ubuntu way:
+#sudo apt-key adv --recv-key --keyserver keyserver.ubuntu.com $1
+

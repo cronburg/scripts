@@ -1,0 +1,7 @@
+#!/bin/bash
+echo "$1"
+adb shell am start -a android.intent.action.SENDTO -d sms:$_KYLE_PHONE --es sms_body "$1" --ez exit_on_sent true
+sleep 3
+adb shell input keyevent 22
+sleep 1
+adb shell input keyevent 66

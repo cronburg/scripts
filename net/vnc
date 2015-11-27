@@ -1,0 +1,13 @@
+#!/bin/bash
+echo "BROKEN / UNSAFE"
+exit # TODO: unbreak
+
+cmd="\$( \$( \$(x11vnc -rfbport $1 -safer -localhost -nopw\
+ -once -display :0 -ncache 10 &> $HOME/log/x11vnc) ||\
+ \$(killall x11vnc) ) & )"
+#read -s -p "$USER@$desktop's password: " tmp
+#echo ""
+echo "$cmd"
+ssh -p $SSH_PORT -n -f $USER@`cat $HOME/Dropbox/desktop.IP` -L $1:localhost:$1 "$cmd"
+sleep 1
+vinagre localhost:$1

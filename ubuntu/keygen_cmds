@@ -1,0 +1,14 @@
+#!/bin/bash
+
+exit # NEVER RUN THIS FILE - exit right away
+
+# Generate & distribute ssh key:
+mkdir ~/.ssh
+chmod 700 ~/.ssh
+#ssh-keygen -t rsa
+ssh-keygen -t rsa -b 4096 # use 4096 bits instead
+# ~/.ssh/id_rsa.pub ==> Public Key
+ssh-copy-id <username>@<host>
+# EDIT /etc/ssh/sshd_config to allow for keys if necessary, then run:
+sudo service ssh restart
+

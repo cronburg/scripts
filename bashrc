@@ -3,6 +3,8 @@
 #alias wifi='sudo iwconfig wlp4s0 power off && sudo wifi-menu'
 #alias eth0-start='sudo $HOME/bin/eth0-start'
 
+[ -e $HOME/.secret ] && source $HOME/.secret
+
 echoerr() { echo "$@" 1>&2; }
 export -f echoerr
 
@@ -120,7 +122,19 @@ j() {
 }
 alias jj='j; cd pin/source/tools/Jikes'
 
+l() {
+  # l u = light up
+  # l d = light down
+  if [ "$1" == "u" ]; then
+    xbacklight -inc 20
+  elif [ "$1" == "d" ]; then
+    xbacklight -dec 20
+  fi
+}
+
+gitme() { git commit --date "`stat -c %y $1`" $1; } # 2015-08-20 12:56:07.900488383 -0400
 export PYTHONSTARTUP=$HOME/.pythonrc.py
+alias minecraft="java -jar $HOME/bin/Minecraft.jar"
 
 mesg n
 
@@ -180,6 +194,7 @@ export GHC_HOME=$HOME/bin/ghc-7.10.2/inst
 export GHC_HOME_IA32=$HOME/bin/ghc-7.10.2-i386/inst
 export GOPATH=~/go
 
+alias dircmp='diff <(cd $1 && find | sort) <(cd $2 && find | sort)' # 2015-08-20 13:11:34.196481549 -0400 
 alias chrome="/usr/bin/google-chrome-stable --incognito"
 alias google-chrome="chrome"
 alias google-chrome-stable="chrome"
@@ -187,6 +202,10 @@ alias xclipv='xclip -selection clipboard'
 alias vi!='vi `!!`'
 alias hodges='echo stupid zach, hodges are for kids'
 alias tamper='sudo wifi Tamper\!\!'
+# TODO: might be this: "sudo wifi 'tamper!!'" # 2015-10-21 11:31:36.707837464 -0400
+
+#alias fixnet='sudo service network-manager restart' # Ubuntu! 2015-08-20 12:56:06.864488390 -0400
+
 setterm -blength 0 &> /dev/null
 xset b off &> /dev/null
 

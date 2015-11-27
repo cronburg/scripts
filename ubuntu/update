@@ -1,0 +1,8 @@
+#!/bin/bash
+sudo apt-get update
+sudo apt-get upgrade
+
+# dist-upgrade seems to break power indicator on kudu?:
+if [[ `hostname` != kudu ]]; then
+  sudo apt-get dist-upgrade
+fi

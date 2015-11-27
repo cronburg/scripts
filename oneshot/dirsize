@@ -1,0 +1,18 @@
+#!/bin/bash
+for s in *; do
+	if [ -d "$s" ]; then
+		tabs="";
+		#len=`expr length "$s"`;
+		#while [ $len -gt 8 ]; do
+		#	tabs=$tabs"\t";
+		#	let "len = $len - 8";
+			# echo $len;
+		#done
+		total=`du -cah ./"$s" | grep total`;
+		#echo -e "Size of $s:$tabs$total";
+		printf "%5s ... $s\n" ${total%total};
+		#echo $total;
+	fi
+done
+tot=`du -cah ./ | grep total`;
+printf "%5s ... TOTAL\n" ${tot%total};

@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Obtain password:
+echo -n "Password: "
+read -s inp
+echo
+
+if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+  copyFncn="tee"
+elif [ "`hostname`" == $_KUDU ]; then
+  copyFncn="xclip -selection clipboard"
+else
+  copyFncn="xclip"
+fi
+
+# Decrypt gpg:
+echo "$inp" | gpg --batch --no-tty -dq --passphrase-fd 0 $_PASS_FILE | $copyFncn
+
+# Only store contents in clipboard for 20 seconds:
+if [ "$copyFncn" == "xclip"* ]; then
+  (sleep 10; echo "" | $copyFncn) &
+#  exit
+fi
+
+unset copyFncn
+

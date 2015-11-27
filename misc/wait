@@ -1,0 +1,27 @@
+#!/usr/bin/env python3.5
+import os
+import time
+import pickle
+import sys
+
+if len(sys.argv) < 2:
+	print("Usage: wait wait")
+	exit(0)
+
+if sys.argv[1] == "-c":
+	fn = os.environ["_WAIT_C"]
+	val = float(sys.argv[2])
+elif sys.argv[1] == "-p":
+	x,t = pickle.load(open(os.environ["_WAIT"]))
+	for xx,tt in zip(x,t):
+		tm = time.strftime("%D %H:%M", time.localtime(tt))
+		print("%s\t%.2f"%(tm,xx))
+	exit(0)
+else:
+	fn = os.environ["_WAIT"]
+	val = float(sys.argv[1])
+
+x,t = pickle.load(open(fn,'rb'))
+pickle.dump((x+[val],t+[time.time()]),open(fn,'wb'))	
+print("Dumped wait time.")
+
