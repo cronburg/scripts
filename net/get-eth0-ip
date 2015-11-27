@@ -1,8 +1,0 @@
-#!/bin/bash
-
-getIP() {
-  ifconfig eth0 | grep " inet " | sed 's/^ *inet //g' | cut -f1 -d' '
-}
-
-getIP
-

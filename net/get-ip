@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+  dev=eth0
+else
+  dev=$1
+fi
+
+getIP() {
+  ifconfig $dev | grep " inet " | sed 's/^ *inet //g' | cut -f1 -d' '
+}
+
+getIP
+

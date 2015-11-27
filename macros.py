@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.5
 import sys
 import os
+import subprocess
 from subprocess import call as _call
 from glob import glob
 import shutil
@@ -11,23 +12,30 @@ def prntfail(*args, **kwargs):
   exit(1)
 
 # TODO: more robust check for dry run
-# Wrap IO functions with 'ifdry' to not perform IO
-# side effects if we are doing a dry run:
+# Wrap functions with 'ifdbg' to print useful
+# message when it is called.
 dry = len(sys.argv) > 1 and ("-n" in sys.argv[1:]) # dry run?
 ID = lambda x: x
-def ifdry(fncn, arg_fmt=ID, kwarg_fmt=ID):
+def ifdbg(fncn, arg_fmt=ID, kwarg_fmt=ID, run_anyways=True):
   fmt = "%s(args=%s, kwargs=%s)"
   def ret(*args, **kwargs):
-    if not dry: fncn(*args, **kwargs)
+    if not dry: return fncn(*args, **kwargs)
     else:
       n = fncn.__name__
       print("%s(%s, %s)" % (n, arg_fmt(args), kwarg_fmt(kwargs)))
+      if run_anyways: return fncn(*args, **kwargs)
   return ret 
+
+# Like ifdbg, but for IO functions that should not be executed
+# (just printf-debugged).
+def ifdry(*args, **kwargs):
+  return ifdbg(*args, **kwargs, run_anyways=False)
 
 join     = os.path.join
 basename = os.path.basename
 ln       = ifdry(os.symlink)
 call     = ifdry(_call, arg_fmt=lambda x: ' '.join(x[0]) + ','.join(x[1:]))
+co       = ifdbg(subprocess.check_output)
 chmod    = ifdry(os.chmod)
 chown    = ifdry(shutil.chown)
 mkdir    = ifdry(lambda p,*args,**kwargs: Path(p).mkdir(*args, **(dict({"parents": True, "exist_ok": True}, **kwargs))))
