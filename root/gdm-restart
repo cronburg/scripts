@@ -1,0 +1,14 @@
+#!/bin/bash
+echo "STOPPING GDM WITH SYSTEMCTL..."
+systemctl stop gdm
+echo "KILLING ALL GDM-USER OWNED PROCESSES..."
+killall -u gdm
+
+# Example of processes apparently left after killing gdm user procs:
+#root       735     1  0 Nov23 ?        00:00:00 gdm-session-worker [pam/gdm-launch-environment]
+
+killall -SIGILL gdm-session-worker
+sleep 0.5
+
+systemctl start gdm
+

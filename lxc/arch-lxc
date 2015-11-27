@@ -1,0 +1,56 @@
+#!/bin/bash
+# Assumptions: You use netctl, and the profiles used by netctl are of
+# named of the form 'device-network' where:
+#   device: e.g. eth0, wlp2s0, ...
+#   network: WiFi SSID / name
+
+# This script will then startup the named container, creating a network
+# bridge if / when necessary to the profile found running via netctl.
+
+# TODO: Multiple profiles running at same time? Choose first one we can ping?
+
+if [ -z $1 ]; then
+  echo "Usage: $0 [container-name]"
+  exit
+fi
+
+br=br0
+#internet=wlp4s0
+internet=$(netctl list | grep '^\*' | cut -f2 -d' ' | cut -f1 -d-)
+CHAIN=FORWARD
+cont=$1
+
+# Container already running? Connect immediately:
+if ! [ -z "$(lxc-info -n $cont | grep RUNNING)" ]; then
+  echo "Container '$cont' already running - connecting now..."
+  lxc-attach -n $cont
+  exit
+fi
+
+if ! (brctl show | grep "^$br"); then
+  # Kill the current bridge and all iptables rules:
+  #ip link set down dev $br
+  #brctl delbr $br
+  
+  # Setup new bridge:
+  brctl addbr $br
+  ip link set up dev $br
+  ip addr add 192.168.63.100/24 dev $br
+  #host IP is ^^^^^^^^^^^^^^
+  # lxc IP is in config file (192.168.63.101 on eth0 for arch2)
+fi
+
+if [ -z $internet ]; then
+  echo "WARNING: No network active. Skipping iptables FORWARDing rules."
+else
+  iptables --flush $CHAIN
+  # Enable forwarding from $br to $internet
+  sysctl net.ipv4.ip_forward=1 1>/dev/null
+  iptables -t nat -A POSTROUTING -o $internet -j MASQUERADE
+  iptables -A $CHAIN -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+  iptables -A $CHAIN -i $br -o $internet -j ACCEPT
+fi
+
+lxc-start -n $cont
+lxc-attach -n $cont
+

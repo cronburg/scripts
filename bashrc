@@ -1,15 +1,7 @@
 
-export GOPATH=~/go
-alias xclipv='xclip -selection clipboard'
-alias vi!='vi `!!`'
-alias hodges='echo stupid zach, hodges are for kids'
-alias tamper='sudo wifi Tamper\!\!'
-setterm -blength 0 &> /dev/null
-xset b off
-
 # Moved to /usr/local/bin:
 #alias wifi='sudo iwconfig wlp4s0 power off && sudo wifi-menu'
-#alias eth0-start='sudo /home/karl/bin/eth0-start'
+#alias eth0-start='sudo $HOME/bin/eth0-start'
 
 echoerr() { echo "$@" 1>&2; }
 export -f echoerr
@@ -43,10 +35,12 @@ pathadd_unsafe() {
 }
 export -f pathadd_unsafe
 
+pathadd_ignore()        { [ -d $1 ] && pathadd "$1"; }
+pathadd_unsafe_ignore() { [ -d $1 ] && pathadd_unsafe "$1"; }
+
 find() {
   path=$1
   shift
-  #echo $@
   /usr/bin/find $path -regextype posix-egrep $@
 }
 
@@ -59,14 +53,13 @@ alias lst='ls2 -lahtr'
 up() {
   n=$1
   if [ -z "$n" ]; then n=4; fi
-  for i in `seq 1 $n`; do
-    cd ../ 
-  done
+  for i in `seq 1 $n`; do cd ../; done
 }
 
-export PATH=$PATH:/home/karl/bin
-
+# Old debian PS1:
 #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+
+# Removed chroot junk:
 PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 
 alias ls='ls --color=auto'
@@ -76,10 +69,11 @@ alias egrep='egrep --color=auto'
 alias grepjava='grep --include=\*.java -rn . -e'
 alias grephs='grep --include=\*.hs -rnw . -e'
 alias grepjikes='grep -rn . -e'
-alias ppl='cd /home/karl/w/ppl/git/deckbuild/hakaru'
+alias ppl='cd $HOME/w/ppl/git/deckbuild/hakaru'
 
 alias gdm='systemctl start gdm'
 
+# Infinite history, but fix resulting broken GDB history:
 export HISTSIZE=
 export HISTFILESIZE=
 export HISTTIMEFORMAT="[%F %T] "
@@ -100,17 +94,17 @@ alias vi='vim'
 alias yes='echo yes'
 alias src='source ~/.bashrc'
 
-export PADS_HASKELL=/home/karl/r/pads/git
-export PADS_HOME=/home/karl/r/pads/pads
+export PADS_HASKELL=$HOME/r/pads/git
+export PADS_HOME=$HOME/r/pads/pads
 p() {
   cd ~/r/pads/pads
-  export PADS_HOME=/home/karl/r/pads/pads
+  export PADS_HOME=$HOME/r/pads/pads
   export OCAML_LIB_DIR=/usr/lib/ocaml
   . $PADS_HOME/scripts/Q_DO_SETENV.sh
 
   # PADS / ML:
-  #export PADS_HOME=/home/karl/r/pads/padsc/padsc_runtime
-  #export PML_HOME=/home/karl/r/pads/padsc
+  #export PADS_HOME=$HOME/r/pads/padsc/padsc_runtime
+  #export PML_HOME=$HOME/r/pads/padsc
   #export OCAML_BIN_DIR=/usr/bin/
   #export OCAML_LIB_DIR=/usr/lib/ocaml/
   #export CAMLIDL_LIB_DIR=$OCAML_LIB_DIR
@@ -119,20 +113,16 @@ p() {
 
 j() {
   cd ~/r/permc/
-  JDK=/home/karl/bin/jdk1.6.0_45
+  JDK=$HOME/bin/jdk1.6.0_45
   export JAVA_HOME=$JDK
   pathadd_unsafe $JDK/bin
   alias ls=ls2
 }
 alias jj='j; cd pin/source/tools/Jikes'
 
-export PYTHONSTARTUP=/home/karl/.pythonrc.py
-alias acc='(cd ~/Dropbox/accounting; soffice accounting.ods) &'
-alias eat='(cd ~/Dropbox/EatSmart; soffice EatSmart_log.ods) &'
+export PYTHONSTARTUP=$HOME/.pythonrc.py
 
 mesg n
-
-alias handbrake='ghb'
 
 alias t='gnome-terminal&'
 alias term='gnome-terminal&'
@@ -162,21 +152,21 @@ alias python3="/usr/bin/python3.1"
 alias mkv2avi="/usr/local/bin/mkv2avi.sh"
 alias soffice=libreoffice
 
-#export ANDROID_SDK=/home/karl/bin/android-sdk-linux
+#export ANDROID_SDK=$HOME/bin/android-sdk-linux
 export ANDROID_SDK=/opt/android-sdk
-pathadd $ANDROID_SDK/platform-tools
-pathadd /home/karl/bin/gradle-2.6/bin
 
-pathadd /home/karl/bin
-pathadd /home/karl/bin/btsync
-[ -d /home/karl/bin.local ] && pathadd /home/karl/bin.local
-[ -d /home/karl/Private/bin ] && pathadd /home/karl/Private/bin
 
-# Go:
-pathadd /home/karl/go/bin
+pathadd $HOME/bin
 
-# Viz class:
-pathadd /home/karl/bin/processing-3.0b4
+p=pathadd_ignore
+$p $ANDROID_SDK/platform-tools    # android platform tools
+$p $HOME/bin/gradle-2.6/bin       # gradle
+$p $HOME/bin/btsync               # btsync
+$p $HOME/bin.local                # Local bin?
+$p $HOME/Private/bin              # Encrypted bin
+$p $HOME/go/bin                   # Go
+$p $HOME/bin/processing-3.0b4     # Processing
+unset p
 
 # Haskell:
 #export GHC_HOME=$HOME/bin/ghc-dev
@@ -188,10 +178,15 @@ export GHC_HOME=$HOME/bin/ghc-7.10.2/inst
 #pathadd_unsafe $HOME/.cabal/bin
 
 export GHC_HOME_IA32=$HOME/bin/ghc-7.10.2-i386/inst
+export GOPATH=~/go
 
 alias chrome="/usr/bin/google-chrome-stable --incognito"
 alias google-chrome="chrome"
 alias google-chrome-stable="chrome"
-
+alias xclipv='xclip -selection clipboard'
+alias vi!='vi `!!`'
+alias hodges='echo stupid zach, hodges are for kids'
+alias tamper='sudo wifi Tamper\!\!'
+setterm -blength 0 &> /dev/null
 xset b off &> /dev/null
 

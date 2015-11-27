@@ -16,7 +16,7 @@ def link(f):
 
 files = \
   [ "bashrc", "dircolors", "gitconfig"
-  , "haskeline", "vimrc"]
+  , "haskeline", "vimrc", "ghci"]
 
 kmap(exists, files)
 kmap(link,   files)

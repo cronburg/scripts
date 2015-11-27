@@ -30,7 +30,9 @@ au BufRead,BufNewFile *.blog set filetype=blog
 au BufRead,BufNewFile *.cup set filetype=cup
 au BufRead,BufNewFile *.hs set filetype=haskell
 au BufRead,BufNewFile makefile.rules set filetype=make
-au BufRead,BufNewFile vimrc set filetype=vimrc
+au BufRead,BufNewFile vimrc set filetype=vim
+au BufRead,BufNewFile ghci set filetype=haskell
+au BufRead,BufNewFile .ghci set filetype=haskell
 autocmd FileType make setlocal noexpandtab
 
 command W w
