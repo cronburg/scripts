@@ -1,4 +1,4 @@
-# Repo for Dotfiles
+# Repo for Scripts, Dotfiles, etc...
 * .bashrc
 * .dircolors
 * .ghci
