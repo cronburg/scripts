@@ -15,8 +15,9 @@ def install(f):
   target = join(cwd, f)
   name   = join("/usr/local/bin", basename(f))
   ln(target, name)
-  chown(target, "root", "root")
-  chmod(target, 755)
+  chown(name, "root", "root")
+  chmod(name, 755)
+  # TODO: check if cwd is readable / executable?
 
 files = \
   [ "lxc/arch-lxc", "lxc/lxc-new"
