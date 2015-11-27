@@ -3,6 +3,7 @@ import sys
 import os
 from subprocess import call as _call
 from glob import glob
+import shutil
 
 def prntfail(*args, **kwargs):
   print(*args, **kwargs)
@@ -24,8 +25,10 @@ def ifdry(fncn, arg_fmt=ID, kwarg_fmt=ID):
 
 join     = os.path.join
 basename = os.path.basename
-ln   = ifdry(os.symlink)
-call = ifdry(_call, arg_fmt=lambda x: ' '.join(x[0]) + ','.join(x[1:]))
+ln       = ifdry(os.symlink)
+call     = ifdry(_call, arg_fmt=lambda x: ' '.join(x[0]) + ','.join(x[1:]))
+chmod    = ifdry(os.chmod)
+chown    = ifdry(shutil.chown)
 
 def _rm(path, force=True):
   try:
@@ -37,6 +40,7 @@ rm = ifdry(_rm)
 
 pwd = os.getcwd
 echo = print
+
 
 # Oh python3, you slay me. (kmap == KarlMap)
 def kmap(fncn, lst):

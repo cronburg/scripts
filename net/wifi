@@ -1,0 +1,29 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+  echo "Please specify SSID as first argument."
+  exit
+fi
+
+dev=wlp4s0
+
+netctl stop-all
+
+#killall dhcpcd
+#sleep 0.05
+ip link set $dev down
+#sleep 0.05
+#ip link set $dev up
+#sleep 0.05
+iwconfig $dev power off
+
+# Need rfkill if system was suspended:
+#ip link set $dev down
+rfkill unblock all
+
+# netctl start wlp4s0-dlink-BC0B
+netctl start $dev-$1
+
+# Damn you wifi-menu. Damn you.
+# wifi-menu
+
