@@ -3,7 +3,14 @@
 
 from macros import *
 
+if os.environ["USER"] != "root":
+  prntfail("Please run as root, from a readable (by other) directory.")
+
+# TODO: more robust arg parse? nahh - what could possibly go wrong with this.
 cwd = pwd()
+if "tmp" in cwd and ("--ignore-tmp" not in sys.argv[1:]):
+  prntfail("WARNING: cwd='%s' looks like a tmp directory. Pass flag '--ignore-tmp' to continue.")
+
 def install(f):
   target = join(cwd, f)
   name   = join("/usr/local/bin", basename(f))
