@@ -14,15 +14,15 @@ if "tmp" in cwd and ("--ignore-tmp" not in sys.argv[1:]):
 def install(f):
   target = join(cwd, f)
   name   = join("/usr/local/bin", basename(f))
-  ln(target, name)
+  try:
+    ln(target, name)
+  except FileExistsError:
+    echo("WARNING: '%s' already exists. Skipping." % (target,))
   chown(name, "root", "root")
-  chmod(name, 755)
+  chmod(name, 0o755)
   # TODO: check if cwd is readable / executable?
 
-files = \
-  [ "lxc/arch-lxc", "lxc/lxc-new"
-  , "net/eth0-start", "net/wifi"
-  ]
-
+files = glob("lxc/*") + glob("misc/*") + glob("net/*") + glob("root/*")
+  
 kmap(install, files)
 
