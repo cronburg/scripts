@@ -4,6 +4,7 @@ import os
 from subprocess import call as _call
 from glob import glob
 import shutil
+from pathlib import Path
 
 def prntfail(*args, **kwargs):
   print(*args, **kwargs)
@@ -29,6 +30,7 @@ ln       = ifdry(os.symlink)
 call     = ifdry(_call, arg_fmt=lambda x: ' '.join(x[0]) + ','.join(x[1:]))
 chmod    = ifdry(os.chmod)
 chown    = ifdry(shutil.chown)
+mkdir    = ifdry(lambda p,*args,**kwargs: Path(p).mkdir(*args, **(dict({"parents": True, "exist_ok": True}, **kwargs))))
 
 def _rm(path, force=True):
   try:

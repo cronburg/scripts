@@ -134,6 +134,8 @@ l() {
 
 gitme() { git commit --date "`stat -c %y $1`" $1; } # 2015-08-20 12:56:07.900488383 -0400
 export PYTHONSTARTUP=$HOME/.pythonrc.py
+export PYTHONPATH="$PATHPATH:/usr/local/lib/python3.5"
+
 alias minecraft="java -jar $HOME/bin/Minecraft.jar"
 
 mesg n

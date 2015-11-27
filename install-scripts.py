@@ -11,18 +11,24 @@ cwd = pwd()
 if "tmp" in cwd and ("--ignore-tmp" not in sys.argv[1:]):
   prntfail("WARNING: cwd='%s' looks like a tmp directory. Pass flag '--ignore-tmp' to continue.")
 
-def install(f):
-  target = join(cwd, f)
-  name   = join("/usr/local/bin", basename(f))
-  try:
-    ln(target, name)
-  except FileExistsError:
-    echo("WARNING: '%s' already exists. Skipping." % (target,))
-  chown(name, "root", "root")
-  chmod(name, 0o755)
+def install(loc="/usr/local/bin", exe=True):
+  mkdir(loc)
+  def _inst(f):
+    target = join(cwd, f)
+    name   = join(loc, basename(f))
+    try:
+      ln(target, name)
+    except FileExistsError:
+      echo("WARNING: '%s' already exists. Skipping." % (target,))
+    chown(name, "root", "root")
+    if exe: chmod(name, 0o755)
+    else:   chmod(name, 0o644)
   # TODO: check if cwd is readable / executable?
+  return _inst
 
-files = glob("lxc/*") + glob("misc/*") + glob("net/*") + glob("root/*")
-  
-kmap(install, files)
+bin_files = glob("lxc/*") + glob("misc/*") + glob("net/*") + glob("root/*")
+lib_files = ["macros.py"]
+
+kmap(install("/usr/local/bin"), bin_files)
+kmap(install("/usr/local/lib/python3.5", exe=False), lib_files)
 
