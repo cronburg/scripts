@@ -1,0 +1,27 @@
+
+:set -fbreak-on-error
+
+:set prompt  "λ> "
+:set prompt2 "\ESC[34mλ| \ESC[m"
+:set +m
+:set +s
+:def rld (\_ -> return ":! clear\n:r")
+import Data.List
+import Data.Ord (comparing)
+
+:def dom (\_ -> return ":m Game.DeckBuild.Dominion.Types Game.DeckBuild.Dominion.Engine Game.DeckBuild.Dominion.Lib Game.DeckBuild.Dominion.Base Game.Sample.Sample Examples.Base Examples.GreedySampler Examples.GreedyMCMC Control.Monad.State Examples.UnitTests\n:l Examples.GreedySampler Examples.UnitTests")
+:def dom2 (\_ -> return ":m Game.DeckBuild.Dominion.Types Game.DeckBuild.Dominion.Engine Game.DeckBuild.Dominion.Lib Game.DeckBuild.Dominion.Base Game.Sample.Sample Examples.Base Examples.GreedySampler Examples.GreedyMCMC Control.Monad.State Examples.UnitTests\n:l Examples.GreedyInference")
+
+:def hakaru (\_ -> return "import qualified Language.Hakaru.ImportanceSampler as IS\nimport Language.Hakaru.Metropolis\nimport Language.Hakaru.Types\nimport Language.Hakaru.Distribution")
+:def hak (\_ -> return ":hakaru")
+
+:def pld (\_ -> return ":set -ddump-splices\n:m Examples.First Language.DeckBuild.Parser Language.DeckBuild.CodeGen Language.DeckBuild.Quote\n:set -XTemplateHaskell\n:m + Language.Haskell.TH\n:l Examples.BaseQuote Examples.First")
+
+:set -ddump-splices
+:set -XTemplateHaskell
+:set -XQuasiQuotes
+:set -fbreak-on-exception
+
+:def dbg (\_ -> return ":set -ddump-splices\n:set -XTemplateHaskell\n:set -XQuasiQuotes\n")
+
+
