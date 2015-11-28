@@ -31,6 +31,16 @@ def ifdbg(fncn, arg_fmt=ID, kwarg_fmt=ID, run_anyways=True):
 def ifdry(*args, **kwargs):
   return ifdbg(*args, **kwargs, run_anyways=False)
 
+# Try to run the given function, catching (and ignoring / warning)
+# any exceptions listed in the remaining args *exceptions.
+def trywarn(fncn, *exceptions):
+  def _trywarn(*args, **kwargs):
+    try:
+      return fncn(*args, **kwargs)
+    except tuple(exceptions) as e:
+      print("WARNING: " + str(e))
+  return _trywarn
+
 join     = os.path.join
 basename = os.path.basename
 ln       = ifdry(os.symlink)

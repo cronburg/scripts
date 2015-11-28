@@ -16,10 +16,7 @@ def install(loc="/usr/local/bin", exe=True):
   def _inst(f):
     target = join(cwd, f)
     name   = join(loc, basename(f))
-    try:
-      ln(target, name)
-    except FileExistsError:
-      echo("WARNING: '%s' already exists. Skipping." % (target,))
+    trywarn(ln, FileExistsError)(target, name)
     chown(name, "root", "root")
     if exe: chmod(name, 0o755)
     else:   chmod(name, 0o644)
