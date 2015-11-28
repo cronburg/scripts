@@ -1,0 +1,25 @@
+[user]
+	email = $_GIT_EMAIL
+	name = $_MY_NAME
+[color]
+	ui = auto
+[credential]
+	helper = cache
+[http]
+[push]
+	default = matching
+[color "branch"]
+	current = yellow reverse
+	local = yellow
+	remote = green
+[color "diff"]
+	meta = yellow bold
+	frag = magenta bold
+	old = red bold
+	new = green bold
+[color "status"]
+	added = yellow
+	changed = green
+	untracked = cyan
+[core]
+	editor = /usr/bin/vim
