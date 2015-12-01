@@ -1,22 +1,48 @@
 #!/bin/bash
 # Helper script to be run inside of the container.
 
-if [[ $container != "lxc" ]]; then
-  echo "\$container='$container' but should be 'lxc' - QUITTING."
-  echo "Did you accidentally run this outside of the container?"
-  exit
+if [[ $container != "lxc" ]] ; then
+  cat /proc/1/cgroup | grep '/lxc' &>/dev/null
+  if [ "$?" -eq 1 ]; then
+    echo "\$container='$container' but should be 'lxc' - QUITTING."
+    echo "Did you accidentally run this outside of the container?"
+    exit
+  fi
 fi
 
-echo "Attempting to install important base packages..."
+if [ ! -e $HOME/.secret ]; then
+  echo "Missing: $HOME/.secret - please re-run once .secret is installed!"
+  exit
+fi
+source $HOME/.secret
 
-# Update and install *necessary* packages.
-pacman -Syuuq
-pacman -Sq base-devel vim net-tools bash-completion htop wget sudo perl
+prog_dne() {
+  if which $1 &>/dev/null; then
+    return 1;
+  fi
+  return 0;
+}
 
-useradd -m -s /bin/bash $_LXC_USER
-groupadd sudo
-usermod -a -G sudo $_LXC_USER
-echo "%sudo ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$_LXC_USER
+if prog_dne sudo; then
+  echo "Attempting to install important base packages..."
+  # Update and install *necessary* packages.
+  pacman -Syuuq
+  pacman -Sq base-devel vim net-tools bash-completion htop wget sudo perl mlocate python
+  updatedb
+else
+  echo "Base packages appear to be installed already - skipping!"
+fi
+
+# Create $_LXC_USER user iff not already created:
+getent passwd $_LXC_USER > /dev/null 2>&1
+if [ "$?" -ne 0 ]; then
+  useradd -m -s /bin/bash $_LXC_USER
+  groupadd sudo
+  usermod -a -G sudo $_LXC_USER
+  echo "%sudo ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$_LXC_USER
+else
+  echo "$_LXC_USER already exists - skipping creation!"
+fi
 
 run() {
   su - $_LXC_USER -c "/bin/bash -c \"PATH=$PATH && cd `pwd` && $1\""
@@ -35,12 +61,27 @@ buildme() {
   cd ../../
 }
 
-# Keys manually verified for now:
-cower_key=487EACC08557AD082088DABA1EB2638FF56C0C53 # "Dave Reisner <d@falconindy.com>" -- 
+if prog_dne pacaur; then
+  # Keys manually verified for now:
+  cower_key=487EACC08557AD082088DABA1EB2638FF56C0C53 # "Dave Reisner <d@falconindy.com>" -- 
+  buildme https://aur.archlinux.org/cgit/aur.git/snapshot/cower.tar.gz   $cower_key
+  buildme https://aur.archlinux.org/cgit/aur.git/snapshot/pacaur.tar.gz
+else
+  echo "pacaur already installed - skipping!"
+fi
 
-echo $PATH
-buildme https://aur.archlinux.org/cgit/aur.git/snapshot/cower.tar.gz   $cower_key
-buildme https://aur.archlinux.org/cgit/aur.git/snapshot/pacaur.tar.gz
-exit
+cd /usr/local/bin
+[ ! -d scripts ] && mkdir scripts
+cd scripts
+[ ! -d .git ] && git clone https://github.com/cronburg/scripts.git .
+./setup.py # dot files
+./install-scripts.py # local bin files
+
+if [ ! -e $HOME/.bash_profile ]; then
+  fn=$HOME/.bash_profile
+  echo "#!/bin/bash" > $fn # allofthemeta
+  echo "[ -e \$HOME/.bashrc ] && source \$HOME/.bashrc" >> $fn
+  chmod 755 $fn
+fi
 
 

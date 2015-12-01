@@ -14,33 +14,41 @@ fi
 
 name=$1
 
+cd /var/lib/lxc/
+
 if [ -d /var/lib/lxc/$name ]; then
-  echo "Container '$name' already exists - not attempting to recreate."
-  exit
+  echo "Container '$name' already exists - skipping straight to initialization."
+  cd $name
+else
+  # Create rootfs and copy arch2 configuration file
+  lxc-create -n $name -t /usr/share/lxc/templates/lxc-archlinux
+  cd $name
+  cat ../config | sed "s/arch2/$name/g" > config
+
+  # Systemd considerations:
+  ln -s ../arch2/autodev ./autodev
+
+  # Systemd conflicts in the /dev tree (disable udev and mounting of binfmt_misc):
+  chroot rootfs /bin/bash -x <<'EOF'
+    ln -s /dev/null /etc/systemd/system/systemd-udevd.service
+    ln -s /dev/null /etc/systemd/system/systemd-udevd-control.socket
+    ln -s /dev/null /etc/systemd/system/systemd-udevd-kernel.socket
+    ln -s /dev/null /etc/systemd/system/proc-sys-fs-binfmt_misc.automount
+    exit
+EOF
 fi
 
-# Create rootfs and copy arch2 configuration file
-lxc-create -n $name -t /usr/share/lxc/templates/lxc-archlinux
-cd /var/lib/lxc/$name
-cat ../config | sed "s/arch2/$name/g" > config
-
-# Systemd considerations:
-ln -s ../arch2/autodev ./autodev
-
-# Systemd conflicts in the /dev tree (disable udev and mounting of binfmt_misc):
-chroot rootfs /bin/bash -x <<'EOF'
-  ln -s /dev/null /etc/systemd/system/systemd-udevd.service
-  ln -s /dev/null /etc/systemd/system/systemd-udevd-control.socket
-  ln -s /dev/null /etc/systemd/system/systemd-udevd-kernel.socket
-  ln -s /dev/null /etc/systemd/system/proc-sys-fs-binfmt_misc.automount
-  exit
-EOF
-
+echo "Initializing container '$name' environment..."
+lxc-stop   -n $name
+#cat `which _lxc-init` | sed "s/\$_LXC_USER/$_LXC_USER/g" > rootfs/_lxc-init # pay no attention...
 cp `which _lxc-init` rootfs/
+chmod 755 rootfs/_lxc-init
+[ ! -e rootfs/.secret ] && cp $HOME/.secret rootfs/root/
 lxc-start  -n $name
 # TODO: --clear-env but with $_LXC_USER?
-lxcrun="lxc-attach -n $name -- "
-$lxcrun /_lxc-init
+#lxcrun="lxc-attach -n $name -- "
+lxcrun() { lxc-attach --clear-env -n $name -- /usr/bin/su - -c $1; }
+lxcrun /_lxc-init
 lxc-stop   -n $name
 rm -f rootfs/_lxc-init
 
