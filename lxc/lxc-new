@@ -5,36 +5,42 @@
 if [ -z $1 ]; then
   echo "Usage: $0 [container-name]"
   exit
+elif [ -z $_LXC_USER ]; then
+  echo "Environment variable \$_LXC_USER not set."; vars=true
+  echo "  This variable is used to create the initial non-root (but with sudo powers)"
+  echo "  user inside of the container."
+  exit
 fi
 
 name=$1
 
 if [ -d /var/lib/lxc/$name ]; then
   echo "Container '$name' already exists - not attempting to recreate."
-else
-
-  # Create rootfs and copy arch2 configuration file
-  lxc-create -n $name -t /usr/share/lxc/templates/lxc-archlinux
-  cd /var/lib/lxc/$name
-  cat ../config | sed "s/arch2/$name/g" > config
-
-  # Systemd considerations:
-  ln -s ../arch2/autodev ./autodev
-
-  # Systemd conflicts in the /dev tree (disable udev and mounting of binfmt_misc):
-  chroot rootfs /bin/bash -x <<'EOF'
-    ln -s /dev/null /etc/systemd/system/systemd-udevd.service
-    ln -s /dev/null /etc/systemd/system/systemd-udevd-control.socket
-    ln -s /dev/null /etc/systemd/system/systemd-udevd-kernel.socket
-    ln -s /dev/null /etc/systemd/system/proc-sys-fs-binfmt_misc.automount
-    exit
-EOF
-
-  echo "Attempting to install important base packages..."
-  lxc-start  -n $name
-  lxc-attach -n $name -- pacman -Syuuq
-  lxc-attach -n $name -- pacman -Sq vim net-tools bash-completion htop wget
-  lxc-stop   -n $name
+  exit
 fi
 
+# Create rootfs and copy arch2 configuration file
+lxc-create -n $name -t /usr/share/lxc/templates/lxc-archlinux
+cd /var/lib/lxc/$name
+cat ../config | sed "s/arch2/$name/g" > config
+
+# Systemd considerations:
+ln -s ../arch2/autodev ./autodev
+
+# Systemd conflicts in the /dev tree (disable udev and mounting of binfmt_misc):
+chroot rootfs /bin/bash -x <<'EOF'
+  ln -s /dev/null /etc/systemd/system/systemd-udevd.service
+  ln -s /dev/null /etc/systemd/system/systemd-udevd-control.socket
+  ln -s /dev/null /etc/systemd/system/systemd-udevd-kernel.socket
+  ln -s /dev/null /etc/systemd/system/proc-sys-fs-binfmt_misc.automount
+  exit
+EOF
+
+cp `which _lxc-init` rootfs/
+lxc-start  -n $name
+# TODO: --clear-env but with $_LXC_USER?
+lxcrun="lxc-attach -n $name -- "
+$lxcrun /_lxc-init
+lxc-stop   -n $name
+rm -f rootfs/_lxc-init
 

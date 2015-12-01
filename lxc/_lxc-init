@@ -1,0 +1,46 @@
+#!/bin/bash
+# Helper script to be run inside of the container.
+
+if [[ $container != "lxc" ]]; then
+  echo "\$container='$container' but should be 'lxc' - QUITTING."
+  echo "Did you accidentally run this outside of the container?"
+  exit
+fi
+
+echo "Attempting to install important base packages..."
+
+# Update and install *necessary* packages.
+pacman -Syuuq
+pacman -Sq base-devel vim net-tools bash-completion htop wget sudo perl
+
+useradd -m -s /bin/bash $_LXC_USER
+groupadd sudo
+usermod -a -G sudo $_LXC_USER
+echo "%sudo ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$_LXC_USER
+
+run() {
+  su - $_LXC_USER -c "/bin/bash -c \"PATH=$PATH && cd `pwd` && $1\""
+}
+
+buildme() {
+  cd /tmp
+  fn=`basename $1`
+  [ ! -e $fn ] && wget $1
+  dir=`echo $fn | sed 's/\..*$//g'`
+  [ ! -e $dir ] && run "tar -xvf $fn"
+  cd $dir
+  echo $2
+  [ ! -z "$2" ] && run "gpg --recv-keys $2" # TODO: more robust GPG support
+  run "makepkg -sri"
+  cd ../../
+}
+
+# Keys manually verified for now:
+cower_key=487EACC08557AD082088DABA1EB2638FF56C0C53 # "Dave Reisner <d@falconindy.com>" -- 
+
+echo $PATH
+buildme https://aur.archlinux.org/cgit/aur.git/snapshot/cower.tar.gz   $cower_key
+buildme https://aur.archlinux.org/cgit/aur.git/snapshot/pacaur.tar.gz
+exit
+
+

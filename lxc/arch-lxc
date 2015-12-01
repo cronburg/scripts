@@ -19,11 +19,12 @@ br=br0
 internet=$(netctl list | grep '^\*' | cut -f2 -d' ' | cut -f1 -d-)
 CHAIN=FORWARD
 cont=$1
+lxcrun="lxc-attach --clear-env -n"
 
 # Container already running? Connect immediately:
 if ! [ -z "$(lxc-info -n $cont | grep RUNNING)" ]; then
   echo "Container '$cont' already running - connecting now..."
-  lxc-attach -n $cont
+  $lxcrun $cont
   exit
 fi
 
@@ -52,5 +53,5 @@ else
 fi
 
 lxc-start -n $cont
-lxc-attach -n $cont
+$lxcrun $cont
 
