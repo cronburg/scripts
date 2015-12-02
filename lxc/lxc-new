@@ -39,7 +39,12 @@ EOF
 fi
 
 echo "Initializing container '$name' environment..."
-lxc-stop   -n $name
+
+if ! [ -z "$(lxc-info -n $name | grep RUNNING)" ]; then
+  echo "Container already running - stopping first."
+  lxc-stop   -n $name
+fi
+
 #cat `which _lxc-init` | sed "s/\$_LXC_USER/$_LXC_USER/g" > rootfs/_lxc-init # pay no attention...
 cp `which _lxc-init` rootfs/
 chmod 755 rootfs/_lxc-init

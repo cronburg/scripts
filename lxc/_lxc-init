@@ -77,11 +77,12 @@ cd scripts
 ./setup.py # dot files
 ./install-scripts.py # local bin files
 
-if [ ! -e $HOME/.bash_profile ]; then
-  fn=$HOME/.bash_profile
-  echo "#!/bin/bash" > $fn # allofthemeta
-  echo "[ -e \$HOME/.bashrc ] && source \$HOME/.bashrc" >> $fn
-  chmod 755 $fn
-fi
+mkdir /root/bin
+#if [ ! -e $HOME/.bash_profile ]; then
+#  fn=$HOME/.bash_profile
+#  echo "#!/bin/bash" > $fn # allofthemeta
+#  echo "[ -e \$HOME/.bashrc ] && source \$HOME/.bashrc" >> $fn
+#  chmod 755 $fn
+#fi
 
 

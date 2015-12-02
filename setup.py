@@ -29,7 +29,7 @@ def gitFix(c):
   return c
 
 files = \
-  [ "bashrc", "dircolors"
+  [ "bashrc", "bash_profile", "dircolors"
   , "haskeline", "vimrc", "ghci"]
 
 kmap(exists, files)
