@@ -23,7 +23,7 @@ prog_dne() {
   return 0;
 }
 
-if prog_dne sudo; then
+if prog_dne wget; then
   echo "Attempting to install important base packages..."
   # Update and install *necessary* packages.
   pacman -Syuuq

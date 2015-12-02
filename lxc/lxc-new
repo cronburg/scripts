@@ -39,6 +39,7 @@ EOF
 fi
 
 echo "Initializing container '$name' environment..."
+sleep 0.25
 
 if ! [ -z "$(lxc-info -n $name | grep RUNNING)" ]; then
   echo "Container already running - stopping first."

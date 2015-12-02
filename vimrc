@@ -9,7 +9,8 @@ au BufRead *access.log* setf httplog
 
 
 " Save swap files in tmp directories, not current directory:
-set directory=~/Private/tmp//,.,/var/tmp//,/tmp//
+"set directory=~/Private/tmp//,.,/var/tmp//,/tmp//
+set directory=$HOME/tmp//
 
 set number
 set smartindent

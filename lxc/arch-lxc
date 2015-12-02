@@ -20,7 +20,7 @@ internet=$(netctl list | grep '^\*' | cut -f2 -d' ' | cut -f1 -d-)
 CHAIN=FORWARD
 cont=$1
 
-lxcrun() { lxc-attach --clear-env -n $1 -- /usr/bin/su -; }
+lxcrun() { lxc-attach --clear-env -n $1 -v TERM=linux -- /usr/bin/su -; }
 
 # Container already running? Connect immediately:
 if ! [ -z "$(lxc-info -n $cont | grep RUNNING)" ]; then
