@@ -15,6 +15,7 @@ def prntfail(*args, **kwargs):
 # Wrap functions with 'ifdbg' to print useful
 # message when it is called.
 dry = len(sys.argv) > 1 and ("-n" in sys.argv[1:]) # dry run?
+isdry = lambda: dry
 ID = lambda x: x
 def ifdbg(fncn, arg_fmt=ID, kwarg_fmt=ID, run_anyways=True):
   fmt = "%s(args=%s, kwargs=%s)"

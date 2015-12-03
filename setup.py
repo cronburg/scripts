@@ -20,12 +20,16 @@ def copy(f, fncn=ID):
   src = join(dfs, f)
   dst = join(os.environ["HOME"], '.' + f)
   with open(src, 'r') as src_fp:
+    # TODO: check if file is already a link, because that was really annoying.
     with open(dst, 'w') as dst_fp:
-      ifdry(dst_fp.write)(fncn(src_fp.read()))
+      if isdry(): print ("src=%s, dst=%s: " %(src,dst)) #, end='')
+      data = fncn(src_fp.read())
+      ifdry(dst_fp.write)(data)
 
 def gitFix(c):
   c = c.replace("$_GIT_EMAIL", os.environ["_GIT_EMAIL"])
   c = c.replace("$_MY_NAME",   os.environ["_MY_NAME"])
+  if isdry(): print(c)
   return c
 
 files = \
