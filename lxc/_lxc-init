@@ -78,6 +78,8 @@ cd scripts
 ./install-scripts.py # local bin files
 
 mkdir /root/bin
+mkdir /root/tmp
+
 #if [ ! -e $HOME/.bash_profile ]; then
 #  fn=$HOME/.bash_profile
 #  echo "#!/bin/bash" > $fn # allofthemeta
