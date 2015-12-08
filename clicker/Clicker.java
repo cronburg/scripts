@@ -1,3 +1,4 @@
+// Credit: @AbeLincoln (https://github.com/AbeLincoln)
 import java.awt.Robot;
 import java.awt.event.InputEvent;
 
