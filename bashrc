@@ -196,6 +196,7 @@ export GHC_HOME=$HOME/bin/ghc-7.10.2/inst
 export GHC_HOME_IA32=$HOME/bin/ghc-7.10.2-i386/inst
 export GOPATH=~/go
 
+alias dt='date +%Y-%b-%d'
 alias dircmp='diff <(cd $1 && find | sort) <(cd $2 && find | sort)' # 2015-08-20 13:11:34.196481549 -0400 
 alias chrome="/usr/bin/google-chrome-stable --incognito"
 alias google-chrome="chrome"
