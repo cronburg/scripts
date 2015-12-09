@@ -77,8 +77,8 @@ cd scripts
 ./setup.py # dot files
 ./install-scripts.py # local bin files
 
-mkdir /root/bin
-mkdir /root/tmp
+mkdir -p /root/bin
+mkdir -p /root/tmp
 
 #if [ ! -e $HOME/.bash_profile ]; then
 #  fn=$HOME/.bash_profile
@@ -87,4 +87,5 @@ mkdir /root/tmp
 #  chmod 755 $fn
 #fi
 
+echo "Container initialization completed!"
 

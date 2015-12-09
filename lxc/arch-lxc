@@ -14,18 +14,38 @@ if [ -z $1 ]; then
   exit
 fi
 
+# Don't attempt to start containers that look like pathnames:
+if [[ "$1" == */* ]]; then
+  echo "Container name '$1' looks like a directory!"
+  echo "Giving up."
+  exit 1
+fi
+
 br=br0
 #internet=wlp4s0
-internet=$(netctl list | grep '^\*' | cut -f2 -d' ' | cut -f1 -d-)
+
+# TODO: more robust!
+internet=ethTuk
+#internet=$(netctl list | grep '^\*' | cut -f2 -d' ' | cut -f1 -d-)
+
 CHAIN=FORWARD
 cont=$1
+cmd="$2"
 
-lxcrun() { lxc-attach --clear-env -n $1 -v TERM=xterm-256color -- /usr/bin/su -; }
+lxcrun() {
+  if [ -z "$cmd" ]; then
+    # No command given on command line - give terminal to user.
+    lxc-attach --clear-env -n $cont -v TERM=xterm-256color -- /usr/bin/su -
+  else
+    # Command specified - run command:
+    lxc-attach --clear-env -n $cont -- /usr/bin/su - -c "$cmd"
+  fi
+}
 
 # Container already running? Connect immediately:
 if ! [ -z "$(lxc-info -n $cont | grep RUNNING)" ]; then
   echo "Container '$cont' already running - connecting now..."
-  lxcrun $cont
+  lxcrun
   exit
 fi
 
@@ -54,5 +74,5 @@ else
 fi
 
 lxc-start -n $cont
-lxcrun $cont
+lxcrun
 

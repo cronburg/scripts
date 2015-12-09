@@ -12,6 +12,13 @@ elif [ -z $_LXC_USER ]; then
   exit
 fi
 
+# Install necessary things if necessary:
+! which brctl &>/dev/null                     && pacman -S bidge-utils
+! (pacman -Ss haveged | grep "\[installed\]") && pacman -S haveged
+# TODO: don't run these every time?:
+systemctl enable haveged
+systemctl start haveged
+
 name=$1
 
 cd /var/lib/lxc/
@@ -23,10 +30,56 @@ else
   # Create rootfs and copy arch2 configuration file
   lxc-create -n $name -t /usr/share/lxc/templates/lxc-archlinux
   cd $name
-  cat ../config | sed "s/arch2/$name/g" > config
+
+  # Default config:
+  #cat ../config | sed "s/arch2/$name/g" > config 
+  # TODO: IP of container?? (101 should change?)
+  echo "Creating config file..."
+  cat <<- EOF > ./config
+# Template used to create this container: /usr/share/lxc/templates/lxc-archlinux
+# Parameters passed to the template:
+# For additional config options, please look at lxc.container.conf(5)
+lxc.rootfs = /var/lib/lxc/$name/rootfs
+lxc.utsname = $name
+lxc.arch = x86_64
+lxc.include = /usr/share/lxc/config/archlinux.common.conf
+
+lxc.network.type = veth
+lxc.network.link = br0 
+lxc.network.flags = up
+
+# DHCP with wired NIC:
+#lxc.network.ipv4 = 0.0.0.0
+
+###################################################################
+#### NAT Bridge (should work with both wired and wireless):
+# CIDR block of br0:
+lxc.network.ipv4 = 192.168.63.101/24
+# Address of kudu (br0):
+lxc.network.ipv4.gateway = 192.168.63.100
+###################################################################
+
+# Name of device inside LXC:
+lxc.network.name = eth0
+
+## systemd within the lxc
+lxc.autodev = 1 
+lxc.pts = 1024
+lxc.kmsg = 0 
+lxc.hook.autodev=/var/lib/lxc/$name/autodev
+EOF
 
   # Systemd considerations:
-  ln -s ../arch2/autodev ./autodev
+  echo "Creating autodev file..."
+  cat <<- 'EOF' > ./autodev
+#!/bin/bash
+cd ${LXC_ROOTFS_MOUNT}/dev
+mkdir net
+mknod net/tun c 10 200
+chmod 0666 net/tun
+EOF
+  echo "Making autodev file executable..."
+  chmod 755 ./autodev
 
   # Systemd conflicts in the /dev tree (disable udev and mounting of binfmt_misc):
   chroot rootfs /bin/bash -x <<'EOF'
@@ -47,14 +100,29 @@ if ! [ -z "$(lxc-info -n $name | grep RUNNING)" ]; then
 fi
 
 #cat `which _lxc-init` | sed "s/\$_LXC_USER/$_LXC_USER/g" > rootfs/_lxc-init # pay no attention...
-cp `which _lxc-init` rootfs/
+file=`which _lxc-init`
+if [ -z "$file" ]; then
+  echo "Could not find '_lxc-init' in your path. QUITTING."
+  exit 1
+fi
+
+mkdir -p rootfs/
+cp $file rootfs/
 chmod 755 rootfs/_lxc-init
+
 [ ! -e rootfs/.secret ] && cp $HOME/.secret rootfs/root/
-lxc-start  -n $name
+
+# Ignore bug when starting lxc:
+#lxc-start  -n $name 2>&1 | grep -v "lxc-start: utils.c: setproctitle: 1461 Invalid argument - setting cmdline failed"
+
 # TODO: --clear-env but with $_LXC_USER?
 #lxcrun="lxc-attach -n $name -- "
-lxcrun() { lxc-attach --clear-env -n $name -- /usr/bin/su - -c $1; }
-lxcrun /_lxc-init
+#lxcrun() { lxc-attach --clear-env -n $name -- /usr/bin/su - -c "$1"; }
+#lxcrun /_lxc-init
+echo "Running initialization script inside container..."
+arch-lxc $name /_lxc-init
+echo "Stopping container..."
 lxc-stop   -n $name
+echo "Cleaning up init script..."
 rm -f rootfs/_lxc-init
 
