@@ -208,6 +208,9 @@ alias vi!='vi `!!`'
 alias hodges='echo stupid zach, hodges are for kids'
 alias tamper='sudo wifi Tamper\!\!'
 # TODO: might be this: "sudo wifi 'tamper!!'" # 2015-10-21 11:31:36.707837464 -0400
+alias ping8='ping 8.8.8.8'
+
+inLXC() { cat /proc/1/cgroup | grep -q lxc; }
 
 #alias fixnet='sudo service network-manager restart' # Ubuntu! 2015-08-20 12:56:06.864488390 -0400
 
