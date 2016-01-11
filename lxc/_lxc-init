@@ -27,8 +27,10 @@ if prog_dne wget; then
   echo "Attempting to install important base packages..."
   # Update and install *necessary* packages.
   pacman -Syuuq
-  pacman -Sq base-devel vim net-tools bash-completion htop wget sudo perl mlocate python
-  updatedb
+  pacman -Sq base-devel vim net-tools bash-completion htop wget sudo perl mlocate python \
+             pkgfile bind-tools openssh
+  updatedb # locate command database
+  pkgfile --update
 else
   echo "Base packages appear to be installed already - skipping!"
 fi

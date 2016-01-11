@@ -7,13 +7,18 @@ cmap w!! w !sudo tee > /dev/null %
 
 au BufRead *access.log* setf httplog
 
-
 " Save swap files in tmp directories, not current directory:
 "set directory=~/Private/tmp//,.,/var/tmp//,/tmp//
 set directory=$HOME/tmp//
 
 set number
-set smartindent
+
+" http://vim.wikia.com/wiki/Restoring_indent_after_typing_hash :
+"set smartindent
+set cindent
+set cinkeys-=0#
+set indentkeys-=0#
+
 set tabstop=2
 set shiftwidth=2
 set expandtab

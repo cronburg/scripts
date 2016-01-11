@@ -23,7 +23,7 @@ name=$1
 
 cd /var/lib/lxc/
 
-if [ -d /var/lib/lxc/$name ]; then
+if [[ "$2" != "-l" ]] && [ -d /var/lib/lxc/$name ]; then
   echo "Container '$name' already exists - skipping straight to initialization."
   cd $name
 else
@@ -54,7 +54,7 @@ lxc.network.flags = up
 ###################################################################
 #### NAT Bridge (should work with both wired and wireless):
 # CIDR block of br0:
-lxc.network.ipv4 = 192.168.63.101/24
+lxc.network.ipv4 = 192.168.63.104/24
 # Address of kudu (br0):
 lxc.network.ipv4.gateway = 192.168.63.100
 ###################################################################
@@ -67,6 +67,12 @@ lxc.autodev = 1
 lxc.pts = 1024
 lxc.kmsg = 0 
 lxc.hook.autodev=/var/lib/lxc/$name/autodev
+
+## Shared mount points:
+lxc.mount.entry = /var/cache/pacman/pkg var/cache/pacman/pkg none bind 0 0 
+
+## for openvpn to connect through tufts vpn
+lxc.cgroup.devices.allow = c 10:200 rwm
 EOF
 
   # Systemd considerations:
