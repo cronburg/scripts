@@ -34,7 +34,7 @@ def gitFix(c):
 
 files = \
   [ "bashrc", "bash_profile", "dircolors"
-  , "haskeline", "vimrc", "ghci"]
+  , "haskeline", "vimrc", "ghci", "inputrc"]
 
 kmap(exists, files)
 kmap(link,   files)
