@@ -18,6 +18,7 @@ try:
 except IOError:
   ip_old = b'' 
 
+print("ip_old=",ip_old,"ip_new=",ip)
 if ip_old != ip and len(ip) > 0: 
   print("Updating IP from '%s' to '%s'" % (ip_old, ip))
   server = os.environ["_PUBLIC_SERVER"]
