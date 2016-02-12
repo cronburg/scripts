@@ -21,15 +21,22 @@ systemctl start haveged
 
 name=$1
 
-cd /var/lib/lxc/
+# Get LXCPATH if set for this new container in locations configuration:
+LXCPATH="`lxc-getpath $name`"
 
-if [[ "$2" != "-l" ]] && [ -d /var/lib/lxc/$name ]; then
+cd $LXCPATH
+[ $? == 1 ] && exit
+
+if [ -d $LXCPATH/$name ]; then
   echo "Container '$name' already exists - skipping straight to initialization."
   cd $name
+  [ $? == 1 ] && exit
 else
+  
   # Create rootfs and copy arch2 configuration file
-  lxc-create -n $name -t /usr/share/lxc/templates/lxc-archlinux
+  lxc-create -P "$LXCPATH" -n $name -t /usr/share/lxc/templates/lxc-archlinux
   cd $name
+  [ $? == 1 ] && exit
 
   # Default config:
   #cat ../config | sed "s/arch2/$name/g" > config 
@@ -39,7 +46,7 @@ else
 # Template used to create this container: /usr/share/lxc/templates/lxc-archlinux
 # Parameters passed to the template:
 # For additional config options, please look at lxc.container.conf(5)
-lxc.rootfs = /var/lib/lxc/$name/rootfs
+lxc.rootfs = $LXCPATH/$name/rootfs
 lxc.utsname = $name
 lxc.arch = x86_64
 lxc.include = /usr/share/lxc/config/archlinux.common.conf
@@ -54,7 +61,7 @@ lxc.network.flags = up
 ###################################################################
 #### NAT Bridge (should work with both wired and wireless):
 # CIDR block of br0:
-lxc.network.ipv4 = 192.168.63.104/24
+lxc.network.ipv4 = 192.168.63.105/24
 # Address of kudu (br0):
 lxc.network.ipv4.gateway = 192.168.63.100
 ###################################################################
@@ -63,10 +70,10 @@ lxc.network.ipv4.gateway = 192.168.63.100
 lxc.network.name = eth0
 
 ## systemd within the lxc
-lxc.autodev = 1 
+lxc.autodev = 1
 lxc.pts = 1024
 lxc.kmsg = 0 
-lxc.hook.autodev=/var/lib/lxc/$name/autodev
+lxc.hook.autodev=$LXCPATH/$name/autodev
 
 ## Shared mount points:
 lxc.mount.entry = /var/cache/pacman/pkg var/cache/pacman/pkg none bind 0 0 
@@ -100,9 +107,9 @@ fi
 echo "Initializing container '$name' environment..."
 sleep 0.25
 
-if ! [ -z "$(lxc-info -n $name | grep RUNNING)" ]; then
+if ! [ -z "$(lxc-info -P "$LXCPATH" -n $name | grep RUNNING)" ]; then
   echo "Container already running - stopping first."
-  lxc-stop   -n $name
+  lxc-stop -P "$LXCPATH" -n $name
 fi
 
 #cat `which _lxc-init` | sed "s/\$_LXC_USER/$_LXC_USER/g" > rootfs/_lxc-init # pay no attention...
@@ -128,7 +135,7 @@ chmod 755 rootfs/_lxc-init
 echo "Running initialization script inside container..."
 arch-lxc $name /_lxc-init
 echo "Stopping container..."
-lxc-stop   -n $name
+lxc-stop -P "$LXCPATH" -n $name
 echo "Cleaning up init script..."
 rm -f rootfs/_lxc-init
 
