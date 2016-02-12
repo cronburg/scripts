@@ -98,8 +98,9 @@ alias src='source ~/.bashrc'
 
 export PADS_HASKELL=$HOME/r/pads/git
 export PADS_HOME=$HOME/r/pads/pads
+export RESEARCH=/mnt/Ragnorak/r
 p() {
-  cd ~/r/pads/pads
+  cd $RESEARCH/pads/pads
   export PADS_HOME=$HOME/r/pads/pads
   export OCAML_LIB_DIR=/usr/lib/ocaml
   . $PADS_HOME/scripts/Q_DO_SETENV.sh
@@ -114,7 +115,7 @@ p() {
 }
 
 j() {
-  cd ~/r/permc/
+  cd $RESEARCH/permc
   JDK=$HOME/bin/jdk1.6.0_45
   export JAVA_HOME=$JDK
   pathadd_unsafe $JDK/bin
@@ -155,7 +156,7 @@ alias vector='echo VECTOR BAH.'
 alias quantum='echo QUANTUM SPOON.'
 
 alias pdf='evince'
-alias natty='nautilus ./ &'
+alias natty='nautilus `pwd` &'
 alias python3.1='/usr/local/bin/python3.1'
 
 alias printers='/usr/bin/system-config-printer &'
@@ -215,4 +216,7 @@ alias ping8='ping 8.8.8.8'
 
 setterm -blength 0 &> /dev/null
 xset b off &> /dev/null
+
+# http://unix.stackexchange.com/a/167911/121871
+shopt -s checkwinsize
 
