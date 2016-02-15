@@ -25,7 +25,7 @@ rfkill unblock all
 
 # netctl start wlp4s0-dlink-BC0B
 echo "Connecting to $dev-$1 ..."
-netctl start $dev-$1
+netctl start "$dev-$1"
 
 # Damn you wifi-menu. Damn you.
 # wifi-menu
