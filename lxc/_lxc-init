@@ -26,11 +26,12 @@ prog_dne() {
 if prog_dne wget; then
   echo "Attempting to install important base packages..."
   # Update and install *necessary* packages.
-  pacman -Syuuq
+  pacman -Syuuq --noconfirm
   pacman -Sq base-devel vim net-tools bash-completion htop wget sudo perl mlocate python \
-             pkgfile bind-tools openssh
+             pkgfile bind-tools openssh --noconfirm
   updatedb # locate command database
   pkgfile --update
+  update-ca-trust # CA files were missing...
 else
   echo "Base packages appear to be installed already - skipping!"
 fi
@@ -46,6 +47,20 @@ else
   echo "$_LXC_USER already exists - skipping creation!"
 fi
 
+cp $HOME/.secret /home/$_LXC_USER/
+chown $_LXC_USER:$_LXC_USER /home/$_LXC_USER/.secret
+su - $_LXC_USER <<'EOF'
+cd $HOME
+source .secret
+rm -f .bashrc .bash_profile
+mkdir -p tmp bin
+mkdir -p w && cd w
+mkdir -p scripts
+cd scripts
+[ ! -d .git ] && git clone https://github.com/cronburg/scripts.git .
+./setup.py
+EOF
+
 run() {
   su - $_LXC_USER -c "/bin/bash -c \"PATH=$PATH && cd `pwd` && $1\""
 }
@@ -59,7 +74,7 @@ buildme() {
   cd $dir
   echo $2
   [ ! -z "$2" ] && run "gpg --recv-keys $2" # TODO: more robust GPG support
-  run "makepkg -sri"
+  run "makepkg -sri --noconfirm"
   cd ../../
 }
 
