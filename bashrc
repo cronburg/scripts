@@ -4,7 +4,8 @@ wgetgit() {
   wget `echo "$1" | sed 's/github.com/raw.githubusercontent.com/g'` "${@:1}"
 }
 
-source /etc/bash_completion.d/git
+[ -e /etc/bash_completion.d/git     ] && . /etc/bash_completion.d/git
+[ -e /etc/profile.d/pbench-agent.sh ] && . /etc/profile.d/pbench-agent.sh
 
 # Moved to /usr/local/bin:
 #alias wifi='sudo iwconfig wlp4s0 power off && sudo wifi-menu'
@@ -156,8 +157,6 @@ inLXC() { cat /proc/1/cgroup | grep -q lxc; }
 alias t='gnome-terminal&'
 alias term='gnome-terminal&'
 
-alias reindent='python /usr/share/doc/python2.7/examples/Tools/scripts/reindent.py'
-
 alias KillKyle='echo Mr. Lincoln has just been shot!'
 alias clare='clear'
 alias clar='clear'
@@ -168,7 +167,6 @@ alias quantum='echo QUANTUM SPOON.'
 
 alias pdf='evince'
 alias natty='nautilus `pwd` &'
-#alias python3.1='/usr/local/bin/python3.1'
 
 alias printers='/usr/bin/system-config-printer &'
 alias fonts='sudo font-manager &'
@@ -177,7 +175,6 @@ alias apacheconfig='cd /etc/apache2/'
 
 alias du="du --human-readable --max-depth=1"
 
-#alias python3="/usr/bin/python3.1"
 alias mkv2avi="/usr/local/bin/mkv2avi.sh"
 alias soffice=libreoffice
 

@@ -44,10 +44,10 @@ lxcrun() {
   if [ -z "$cmd" ]; then
     # No command given on command line - give terminal to user.
     #lxc-attach --clear-env -n $cont -P "$LXCPATH" -v TERM=xterm-256color -- /usr/bin/su -
-    lxc-attach -P "$LXCPATH" -n $cont
+    lxc-attach -e -P "$LXCPATH" -n $cont -l DEBUG
   else
     # Command specified - run command:
-    lxc-attach --clear-env -P "$LXCPATH" -n $cont -- /usr/bin/su - -c "$cmd"
+    lxc-attach -e --clear-env -P "$LXCPATH" -n $cont -- /usr/bin/su - -c "$cmd"
   fi
 }
 
@@ -100,6 +100,6 @@ else
 
 fi
 
-lxc-start -P "$LXCPATH" -n $cont
+lxc-start -P "$LXCPATH" -n $cont -l DEBUG
 lxcrun
 

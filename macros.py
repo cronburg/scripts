@@ -30,7 +30,7 @@ def ifdbg(fncn, arg_fmt=ID, kwarg_fmt=ID, run_anyways=True):
 # Like ifdbg, but for IO functions that should not be executed
 # (just printf-debugged).
 def ifdry(*args, **kwargs):
-  return ifdbg(*args, **kwargs, run_anyways=False)
+  return ifdbg(run_anyways=False, *args, **kwargs)
 
 # Try to run the given function, catching (and ignoring / warning)
 # any exceptions listed in the remaining args *exceptions.
@@ -61,7 +61,6 @@ rm = ifdry(_rm)
 
 pwd = os.getcwd
 echo = print
-
 
 # Oh python3, you slay me. (kmap == KarlMap)
 def kmap(fncn, lst):

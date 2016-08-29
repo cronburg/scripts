@@ -2,8 +2,8 @@
 # The following script automates the LXC creation process for Arch as
 # described here: https://wiki.archlinux.org/index.php/Linux_Containers
 
-if [ -z $1 ]; then
-  echo "Usage: $0 [container-name]"
+if [ -z $1 -o -z "$2" ]; then
+  echo "Usage: $0 [container-name] [IP]"
   exit
 elif [ -z $_LXC_USER ]; then
   echo "Environment variable \$_LXC_USER not set."; vars=true
@@ -20,6 +20,7 @@ systemctl enable haveged
 systemctl start haveged
 
 name=$1
+ip=$2
 
 # Get LXCPATH if set for this new container in locations configuration:
 LXCPATH="`lxc-getpath $name`"
@@ -61,7 +62,7 @@ lxc.network.flags = up
 ###################################################################
 #### NAT Bridge (should work with both wired and wireless):
 # CIDR block of br0:
-lxc.network.ipv4 = 192.168.63.105/24
+lxc.network.ipv4 = $ip/24
 # Address of kudu (br0):
 lxc.network.ipv4.gateway = 192.168.63.100
 ###################################################################
