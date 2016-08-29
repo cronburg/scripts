@@ -19,16 +19,20 @@ set cindent
 set cinkeys-=0#
 set indentkeys-=0#
 
-set tabstop=2
-set shiftwidth=2
-set expandtab
+set tabstop=8
+set shiftwidth=8
+"set expandtab
+
+" highlight search, and colorcolor
 set hlsearch
+hi Search cterm=NONE ctermfg=white ctermbg=darkgreen
 
 " GVIM settings:
 "color slate
 "set guifont=-b&h-monospace-medium-r-normal-*-*-140-*-*-m-*-iso8859-15
 
 set background=dark "light "dark
+
 syntax on
 au BufRead,BufNewFile *.ic set filetype=scheme
 au BufRead,BufNewFile *.pde set filetype=java
@@ -39,6 +43,7 @@ au BufRead,BufNewFile makefile.rules set filetype=make
 au BufRead,BufNewFile vimrc set filetype=vim
 au BufRead,BufNewFile ghci set filetype=haskell
 au BufRead,BufNewFile .ghci set filetype=haskell
+au BufRead,BufNewFile *.job set filetype=cfg
 autocmd FileType make setlocal noexpandtab
 
 command W w

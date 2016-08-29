@@ -1,4 +1,11 @@
 
+# Convert github link into raw link:
+wgetgit() {
+  wget `echo "$1" | sed 's/github.com/raw.githubusercontent.com/g'` "${@:1}"
+}
+
+source /etc/bash_completion.d/git
+
 # Moved to /usr/local/bin:
 #alias wifi='sudo iwconfig wlp4s0 power off && sudo wifi-menu'
 #alias eth0-start='sudo $HOME/bin/eth0-start'
@@ -63,6 +70,7 @@ up() {
 
 # Removed chroot junk:
 PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+export PROMPT_DIRTRIM=2
 
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
@@ -81,7 +89,9 @@ export HISTFILESIZE=
 export HISTTIMEFORMAT="[%F %T] "
 export HISTFILE=~/.bash_eternal_history
 PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
-alias gdb='HISTSIZE=70000000; /usr/bin/gdb "$@"'
+export GDBHISTFILE=~/.gdb_eternal_history
+export GDBHISTSIZE=70000000
+#alias gdb='/usr/bin/gdb "$@"'
 
 export LESS="-R"
 export LESSOPEN='|~/.lessfilter %s'
@@ -135,7 +145,8 @@ l() {
 
 gitme() { git commit --date "`stat -c %y $1`" $1; } # 2015-08-20 12:56:07.900488383 -0400
 export PYTHONSTARTUP=$HOME/.pythonrc.py
-export PYTHONPATH="$PATHPATH:/usr/local/lib/python3.5"
+#export PYTHONPATH="$PATHPATH:/usr/local/lib/python3.5"
+#alias python='python3.5'
 
 alias minecraft="java -jar $HOME/bin/Minecraft.jar"
 
@@ -157,7 +168,7 @@ alias quantum='echo QUANTUM SPOON.'
 
 alias pdf='evince'
 alias natty='nautilus `pwd` &'
-alias python3.1='/usr/local/bin/python3.1'
+#alias python3.1='/usr/local/bin/python3.1'
 
 alias printers='/usr/bin/system-config-printer &'
 alias fonts='sudo font-manager &'
@@ -166,7 +177,7 @@ alias apacheconfig='cd /etc/apache2/'
 
 alias du="du --human-readable --max-depth=1"
 
-alias python3="/usr/bin/python3.1"
+#alias python3="/usr/bin/python3.1"
 alias mkv2avi="/usr/local/bin/mkv2avi.sh"
 alias soffice=libreoffice
 
@@ -183,7 +194,7 @@ $p $HOME/bin/btsync               # btsync
 $p $HOME/bin.local                # Local bin?
 $p $HOME/Private/bin              # Encrypted bin
 $p $HOME/go/bin                   # Go
-$p $HOME/bin/processing-3.0b4     # Processing
+$p $HOME/bin/processing-3.1.1     # Processing
 unset p
 
 # Haskell:
@@ -202,7 +213,7 @@ alias getIP='dig +short myip.opendns.com @resolver1.opendns.com'
 alias lsblk='lsblk -o NAME,SIZE,FSTYPE,TYPE,RO,LABEL,UUID,MOUNTPOINT'
 alias dt='date +%Y-%b-%d'
 alias dircmp='diff <(cd $1 && find | sort) <(cd $2 && find | sort)' # 2015-08-20 13:11:34.196481549 -0400 
-alias chrome="/usr/bin/google-chrome-stable --incognito"
+alias chrome="/usr/bin/google-chrome-stable" #--incognito"
 alias google-chrome="chrome"
 alias google-chrome-stable="chrome"
 alias xclipv='xclip -selection clipboard'
@@ -219,4 +230,9 @@ xset b off &> /dev/null
 
 # http://unix.stackexchange.com/a/167911/121871
 shopt -s checkwinsize
+
+gitpast() {
+  git add $1
+  git commit -m "$2" --date="`stat -c %y $1`" $1
+}
 
