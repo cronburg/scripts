@@ -55,6 +55,8 @@ chmod    = ifdry(os.chmod)
 
 if sys.version_info.major == 3:
   chown    = ifdry(shutil.chown)
+else:
+  chown    = ifdry(os.chown)
 
 mkdir    = ifdry(lambda p,*args,**kwargs: Path(p).mkdir(*args, **(dict({"parents": True, "exist_ok": True}, **kwargs))))
 
