@@ -69,9 +69,13 @@ def _rm(path, force=True):
 rm = ifdry(_rm)
 
 pwd = os.getcwd
+<<<<<<< HEAD
 def echo(*args):
   for a in args:
     print(a)
+=======
+echo = print
+>>>>>>> 3c77b66632697be62a6e7eba5796232d8000f1a2
 
 # Oh python3, you slay me. (kmap == KarlMap)
 def kmap(fncn, lst):
