@@ -35,7 +35,7 @@ def gitFix(c):
 files = \
   [ "bashrc", "bash_profile", "dircolors"
   , "haskeline", "vimrc", "ghci", "inputrc"
-  , "pythonrc.py", "tmuxrc", "short-pwd.py"
+  , "pythonrc.py", "tmux.conf", "short-pwd.py"
   , "gdbinit" ]
 
 kmap(exists, files)
