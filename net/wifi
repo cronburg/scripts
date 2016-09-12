@@ -5,7 +5,9 @@ if [ -z "$1" ]; then
   exit
 fi
 
-dev=wlp4s0
+interfaces() { ifconfig -a | sed 's/[ \t].*//;/^$/d' | cut -f1 -d:; }
+
+dev="`interfaces | egrep "^wlp"`"
 
 netctl stop-all
 
@@ -22,7 +24,8 @@ iwconfig $dev power off
 rfkill unblock all
 
 # netctl start wlp4s0-dlink-BC0B
-netctl start $dev-$1
+echo "Connecting to $dev-$1 ..."
+netctl start "$dev-$1"
 
 # Damn you wifi-menu. Damn you.
 # wifi-menu

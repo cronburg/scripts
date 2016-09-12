@@ -32,18 +32,27 @@ CHAIN=FORWARD
 cont=$1
 cmd="$2"
 
+# Configuration of container locations not in /var/lib/lxc:
+LXCPATH="`lxc-getpath $cont`"
+
+if [ ! -e "$LXCPATH/$cont" ]; then
+  echo "ERROR: '$LXCPATH/$cont' not found."
+  exit
+fi
+
 lxcrun() {
   if [ -z "$cmd" ]; then
     # No command given on command line - give terminal to user.
-    lxc-attach --clear-env -n $cont -v TERM=xterm-256color -- /usr/bin/su -
+    #lxc-attach --clear-env -n $cont -P "$LXCPATH" -v TERM=xterm-256color -- /usr/bin/su -
+    lxc-attach -e -P "$LXCPATH" -n $cont -l DEBUG
   else
     # Command specified - run command:
-    lxc-attach --clear-env -n $cont -- /usr/bin/su - -c "$cmd"
+    lxc-attach -e --clear-env -P "$LXCPATH" -n $cont -- /usr/bin/su - -c "$cmd"
   fi
 }
 
 # Container already running? Connect immediately:
-if ! [ -z "$(lxc-info -n $cont | grep RUNNING)" ]; then
+if ! [ -z "$(lxc-info -P "$LXCPATH" -n $cont | grep RUNNING)" ]; then
   echo "Container '$cont' already running - connecting now..."
   lxcrun
   exit
@@ -67,7 +76,7 @@ if [ -z $internet ]; then
 else
   
   # https://zyisrad.com/linux-apache-mysql-php-in-an-lxc-container/
-  cont_ip=`cat /var/lib/lxc/$cont/config | egrep "^lxc.network.ipv4 *=" | sed 's/lxc.network.ipv4 *= *//g' | cut -f1 -d/`
+  cont_ip=`cat $LXCPATH/$cont/config | egrep "^lxc.network.ipv4 *=" | sed 's/lxc.network.ipv4 *= *//g' | cut -f1 -d/`
   if [ -z "$cont_ip" ]; then
     echo "Could not determine container IP from config file in /var/lib/lxc/$cont/config - QUITTING!"
     exit
@@ -77,20 +86,20 @@ else
   fi
 
   # Flush and enable forwarding:
-  iptables --flush $CHAIN
+  #iptables --flush $CHAIN
   sysctl net.ipv4.ip_forward=1 1>/dev/null
   
   # Enable forwarding from $br to $internet
-  iptables -t nat -A POSTROUTING -o $internet -j MASQUERADE
-  iptables -A $CHAIN -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-  iptables -A $CHAIN -i $br -o $internet -j ACCEPT
+  #iptables -t nat -A POSTROUTING -o $internet -j MASQUERADE
+  #iptables -A $CHAIN -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+  #iptables -A $CHAIN -i $br -o $internet -j ACCEPT
 
   # TODO: only forward port 443 for container with web server
   #iptables -t nat -D PREROUTING -p tcp -m tcp --dport 443 -j DNAT --to-destination $cont_ip:443
-  iptables -t nat -D POSTROUTING -s $cont_ip/32 -j MASQUERADE
+  #iptables -t nat -D POSTROUTING -s $cont_ip/32 -j MASQUERADE
 
 fi
 
-lxc-start -n $cont
+lxc-start -P "$LXCPATH" -n $cont -l DEBUG
 lxcrun
 

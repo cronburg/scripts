@@ -5,7 +5,9 @@ echo -n "Password: "
 read -s inp
 echo
 
-if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+# TODO:
+#xclip &> /dev/null
+if [ ! -z "$TEE" ] || [ $? == 1 ] || [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
   copyFncn="tee"
 elif [ "`hostname`" == $_KUDU ]; then
   copyFncn="xclip -selection clipboard"
