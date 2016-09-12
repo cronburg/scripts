@@ -100,11 +100,8 @@ export PADS_HASKELL=$HOME/r/pads/git
 export PADS_HOME=$HOME/r/pads/pads
 export RESEARCH=/mnt/Ragnorak/r
 p() {
-  cd $RESEARCH/pads/pads
-  export PADS_HOME=$HOME/r/pads/pads
-  export OCAML_LIB_DIR=/usr/lib/ocaml
-  . $PADS_HOME/scripts/Q_DO_SETENV.sh
-
+  cd $PADS_HASKELL
+  #pathadd_unsafe $HOME/.cabal/bin
   # PADS / ML:
   #export PADS_HOME=$HOME/r/pads/padsc/padsc_runtime
   #export PML_HOME=$HOME/r/pads/padsc
@@ -122,6 +119,15 @@ j() {
   alias ls=ls2
 }
 alias jj='j; cd pin/source/tools/Jikes'
+
+antlr() {
+  ANTLR=$HOME/w/siriusly/antlr
+  ANTLR_LIB=$ANTLR/lib/antlr-4.0-complete.jar
+  cd $ANTLR
+  export CLASSPATH=".:$ANTLR_LIB:$CLASSPATH"
+  alias antlr4="java -jar $ANTLR_LIB"
+  alias grun="java org.antlr.v4.runtime.misc.TestRig"
+}
 
 l() {
   # l u = light up
@@ -188,7 +194,7 @@ unset p
 
 # Haskell:
 #export GHC_HOME=$HOME/bin/ghc-dev
-export GHC_HOME=$HOME/bin/ghc-7.10.2/inst
+export GHC_HOME=$HOME/bin/ghc-7.10.3-x86_64/inst
 
 #pathadd_unsafe $GHC_HOME/bin
 
@@ -196,7 +202,7 @@ export GHC_HOME=$HOME/bin/ghc-7.10.2/inst
 #pathadd_unsafe $HOME/.cabal/bin
 
 export GHC_HOME_IA32=$HOME/bin/ghc-7.10.2-i386/inst
-export GOPATH=~/go
+export GOPATH=~/.go
 
 alias getIP='dig +short myip.opendns.com @resolver1.opendns.com'
 alias lsblk='lsblk -o NAME,SIZE,FSTYPE,TYPE,RO,LABEL,UUID,MOUNTPOINT'
@@ -219,4 +225,10 @@ xset b off &> /dev/null
 
 # http://unix.stackexchange.com/a/167911/121871
 shopt -s checkwinsize
+
+gitpast() {
+  git add $1
+  git commit -m "$2" --date="`stat -c %y $1`" $1
+}
+
 

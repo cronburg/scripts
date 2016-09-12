@@ -18,5 +18,5 @@ macros = os.path.join(scripts_dir, "macros.py")
 if os.path.exists(macros):
   execfile(macros)
 else:
-  print("WARNING: Could not locate macros.py in '%s'"%(macros,))
+  sys.stderr.write("WARNING: Could not locate macros.py in '%s'\n"%(macros,))
 

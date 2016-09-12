@@ -11,6 +11,7 @@ au BufRead *access.log* setf httplog
 "set directory=~/Private/tmp//,.,/var/tmp//,/tmp//
 set directory=$HOME/tmp//
 
+setlocal cm=blowfish2
 set number
 
 " http://vim.wikia.com/wiki/Restoring_indent_after_typing_hash :
@@ -53,4 +54,6 @@ endfunction
 command! -nargs=+ CommandCabbr call CommandCabbr(<f-args>)
 " Use it on itself to define a simpler abbreviation for itself.
 CommandCabbr ccab CommandCabbr
+
+match ErrorMsg '\%>80v.\+'
 
