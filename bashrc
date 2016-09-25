@@ -40,11 +40,11 @@ export -f pathadd_unsafe
 pathadd_ignore()        { [ -d $1 ] && pathadd "$1"; }
 pathadd_unsafe_ignore() { [ -d $1 ] && pathadd_unsafe "$1"; }
 
-find() {
-  path=$1
-  shift
-  /usr/bin/find $path -regextype posix-egrep $@
-}
+#find() {
+#  path=$1
+#  shift
+#  /usr/bin/find $path -regextype posix-egrep $@
+#}
 
 # Ignore year, and add seconds when doing research / working on recent things:
 alias ls2='/bin/ls --color=auto --time-style="+%b %d %H:%M:%S"'
@@ -134,8 +134,8 @@ l() {
 }
 
 gitme() { git commit --date "`stat -c %y $1`" $1; } # 2015-08-20 12:56:07.900488383 -0400
-export PYTHONSTARTUP=$HOME/.pythonrc.py
-export PYTHONPATH="$PATHPATH:/usr/local/lib/python3.5"
+#export PYTHONSTARTUP=$HOME/.pythonrc.py
+#export PYTHONPATH="$PATHPATH:/usr/local/lib/python3.5"
 
 alias minecraft="java -jar $HOME/bin/Minecraft.jar"
 
@@ -157,7 +157,7 @@ alias quantum='echo QUANTUM SPOON.'
 
 alias pdf='evince'
 alias natty='nautilus `pwd` &'
-alias python3.1='/usr/local/bin/python3.1'
+#alias python3.1='/usr/local/bin/python3.1'
 
 alias printers='/usr/bin/system-config-printer &'
 alias fonts='sudo font-manager &'
@@ -166,7 +166,7 @@ alias apacheconfig='cd /etc/apache2/'
 
 alias du="du --human-readable --max-depth=1"
 
-alias python3="/usr/bin/python3.1"
+#alias python3="/usr/bin/python3.1"
 alias mkv2avi="/usr/local/bin/mkv2avi.sh"
 alias soffice=libreoffice
 
