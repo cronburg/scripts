@@ -28,7 +28,7 @@ if prog_dne wget; then
   # Update and install *necessary* packages.
   pacman -Syuuq --noconfirm
   pacman -Sq base-devel vim net-tools bash-completion htop wget sudo perl mlocate python \
-             pkgfile bind-tools openssh --noconfirm
+             pkgfile bind-tools openssh git --noconfirm
   updatedb # locate command database
   pkgfile --update
   update-ca-trust # CA files were missing...

@@ -21,19 +21,22 @@ if [[ "$1" == */* ]]; then
   exit 1
 fi
 
-br=br0
-#internet=wlp4s0
-
-# TODO: more robust!
-internet=ethTuk
-#internet=$(netctl list | grep '^\*' | cut -f2 -d' ' | cut -f1 -d-)
-
-CHAIN=FORWARD
 cont=$1
 cmd="$2"
 
+br="`lxc-getbridge $cont`"
+#internet=wlp4s0
+
+# TODO: more robust!
+internet="`lxc-getinternet $cont`"
+#internet=ethTuk
+#internet=$(netctl list | grep '^\*' | cut -f2 -d' ' | cut -f1 -d-)
+
+CHAIN=FORWARD
+
 # Configuration of container locations not in /var/lib/lxc:
 LXCPATH="`lxc-getpath $cont`"
+LXCBRIDGE="`lxc-getbridge $cont`"
 
 if [ ! -e "$LXCPATH/$cont" ]; then
   echo "ERROR: '$LXCPATH/$cont' not found."
@@ -66,7 +69,9 @@ if ! (brctl show | grep "^$br"); then
   # Setup new bridge:
   brctl addbr $br
   ip link set up dev $br
-  ip addr add 192.168.63.100/24 dev $br
+  HOSTIP=`cat $LXCPATH/$cont/config | grep '^lxc.network.ipv4.gateway = ' | cut -f3 -d' '`
+  ip addr add $HOSTIP/24 dev $br
+  #ip addr add 192.168.63.100/24 dev $br
   #host IP is ^^^^^^^^^^^^^^
   # lxc IP is in config file (192.168.63.101 on eth0 for arch2)
 fi

@@ -8,7 +8,8 @@ cont=$1
 [ -z "$LXCPATH" ] && LXCPATH=/var/lib/lxc
 if [ -e $LXC_LOCS_CONF ]; then
   source $LXC_LOCS_CONF
-  eval LXCPATH=\$$cont
+  eval CONT=\$$cont
+  LXCPATH=`echo $CONT | awk -F, '{print $1}'`
   if [ -z "$LXCPATH" ]; then
     #echo "WARNING: $LXC_LOCS_CONF exists, but '$cont' not specified by it."
     #echo "Solution: Using default container location of /var/lib/lxc."
