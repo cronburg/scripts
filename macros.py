@@ -5,10 +5,13 @@ import subprocess
 from subprocess import call as _call
 from glob import glob
 import shutil
-from pathlib import Path
+
+if sys.version_info.major == 3:
+  from pathlib import Path
 
 def prntfail(*args, **kwargs):
-  print(*args, **kwargs)
+  print(args)
+  print(kwargs)
   exit(1)
 
 # TODO: more robust check for dry run
@@ -30,7 +33,8 @@ def ifdbg(fncn, arg_fmt=ID, kwarg_fmt=ID, run_anyways=True):
 # Like ifdbg, but for IO functions that should not be executed
 # (just printf-debugged).
 def ifdry(*args, **kwargs):
-  return ifdbg(*args, **kwargs, run_anyways=False)
+  kwargs.update({"run_anyways": False})
+  return ifdbg(*args, **kwargs)
 
 # Try to run the given function, catching (and ignoring / warning)
 # any exceptions listed in the remaining args *exceptions.
@@ -48,7 +52,12 @@ ln       = ifdry(os.symlink)
 call     = ifdry(_call, arg_fmt=lambda x: ' '.join(x[0]) + ','.join(x[1:]))
 co       = ifdbg(subprocess.check_output)
 chmod    = ifdry(os.chmod)
-chown    = ifdry(shutil.chown)
+
+if sys.version_info.major == 3:
+  chown    = ifdry(shutil.chown)
+else:
+  chown    = ifdry(os.chown)
+
 mkdir    = ifdry(lambda p,*args,**kwargs: Path(p).mkdir(*args, **(dict({"parents": True, "exist_ok": True}, **kwargs))))
 
 def _rm(path, force=True):
@@ -60,8 +69,9 @@ def _rm(path, force=True):
 rm = ifdry(_rm)
 
 pwd = os.getcwd
-echo = print
-
+def echo(*args):
+  for a in args:
+    print(a)
 
 # Oh python3, you slay me. (kmap == KarlMap)
 def kmap(fncn, lst):

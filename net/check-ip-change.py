@@ -10,7 +10,10 @@ except AttributeError:
   echo("Not connected.")
   exit(0)
 
-log_file = os.path.join(os.environ["HOME"], "log/kudu.IP")
+host = co("hostname", shell=True).decode("utf-8").strip()
+
+log_file_tmp = os.path.join(os.environ["HOME"], "log/%s.IP.tmp" % (host,))
+log_file = os.path.join(os.environ["HOME"], "log/%s.IP" % (host,))
 
 try:
   with open(log_file, 'r') as fd: 
@@ -21,8 +24,8 @@ except IOError:
 print("ip_old=",ip_old,"ip_new=",ip)
 if ip_old != ip and len(ip) > 0: 
   print("Updating IP from '%s' to '%s'" % (ip_old, ip))
-  server = os.environ["_PUBLIC_SERVER"]
-  call("ssh %s exec bash -c \"echo '%s' > `hostname`.IP\"" % (server,ip), shell=True)
-  with open(log_file, 'w') as fd: 
+  with open(log_file_tmp, 'w') as fd: 
     ifdry(fd.write)(ip)
+  call("scp %s %s:~/%s.IP" % (log_file_tmp, os.environ["_PUBLIC_SERVER"], host), shell=True)
+  call("mv %s %s" % (log_file_tmp, log_file), shell=True)
 

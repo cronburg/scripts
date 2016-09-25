@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 import os
 
@@ -16,7 +17,10 @@ pythonrc = os.path.realpath(__file__)
 scripts_dir = os.path.dirname(pythonrc)
 macros = os.path.join(scripts_dir, "macros.py")
 if os.path.exists(macros):
-  execfile(macros)
+  try:
+    execfile(macros)
+  except SyntaxError:
+    pass # TODO: fix macros in 2.7
 else:
-  print("WARNING: Could not locate macros.py in '%s'"%(macros,))
+  sys.stderr.write("WARNING: Could not locate macros.py in '%s'\n"%(macros,))
 

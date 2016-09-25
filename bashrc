@@ -1,4 +1,14 @@
 
+alias quit=exit
+
+# Convert github link into raw link:
+wgetgit() {
+  wget `echo "$1" | sed 's/github.com/raw.githubusercontent.com/g'` "${@:1}"
+}
+
+[ -e /etc/bash_completion.d/git     ] && . /etc/bash_completion.d/git
+[ -e /etc/profile.d/pbench-agent.sh ] && . /etc/profile.d/pbench-agent.sh
+
 # Moved to /usr/local/bin:
 #alias wifi='sudo iwconfig wlp4s0 power off && sudo wifi-menu'
 #alias eth0-start='sudo $HOME/bin/eth0-start'
@@ -40,11 +50,11 @@ export -f pathadd_unsafe
 pathadd_ignore()        { [ -d $1 ] && pathadd "$1"; }
 pathadd_unsafe_ignore() { [ -d $1 ] && pathadd_unsafe "$1"; }
 
-find() {
-  path=$1
-  shift
-  /usr/bin/find $path -regextype posix-egrep $@
-}
+#find() {
+#  path=$1
+#  shift
+#  /usr/bin/find $path -regextype posix-egrep $@
+#}
 
 # Ignore year, and add seconds when doing research / working on recent things:
 alias ls2='/bin/ls --color=auto --time-style="+%b %d %H:%M:%S"'
@@ -63,6 +73,7 @@ up() {
 
 # Removed chroot junk:
 PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+export PROMPT_DIRTRIM=2
 
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
@@ -81,7 +92,9 @@ export HISTFILESIZE=
 export HISTTIMEFORMAT="[%F %T] "
 export HISTFILE=~/.bash_eternal_history
 PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
-alias gdb='HISTSIZE=70000000; /usr/bin/gdb "$@"'
+export GDBHISTFILE=~/.gdb_eternal_history
+export GDBHISTSIZE=70000000
+#alias gdb='/usr/bin/gdb "$@"'
 
 export LESS="-R"
 export LESSOPEN='|~/.lessfilter %s'
@@ -100,11 +113,8 @@ export PADS_HASKELL=$HOME/r/pads/git
 export PADS_HOME=$HOME/r/pads/pads
 export RESEARCH=/mnt/Ragnorak/r
 p() {
-  cd $RESEARCH/pads/pads
-  export PADS_HOME=$HOME/r/pads/pads
-  export OCAML_LIB_DIR=/usr/lib/ocaml
-  . $PADS_HOME/scripts/Q_DO_SETENV.sh
-
+  cd $PADS_HASKELL
+  #pathadd_unsafe $HOME/.cabal/bin
   # PADS / ML:
   #export PADS_HOME=$HOME/r/pads/padsc/padsc_runtime
   #export PML_HOME=$HOME/r/pads/padsc
@@ -123,6 +133,15 @@ j() {
 }
 alias jj='j; cd pin/source/tools/Jikes'
 
+antlr() {
+  ANTLR=$HOME/w/siriusly/antlr
+  ANTLR_LIB=$ANTLR/lib/antlr-4.0-complete.jar
+  cd $ANTLR
+  export CLASSPATH=".:$ANTLR_LIB:$CLASSPATH"
+  alias antlr4="java -jar $ANTLR_LIB"
+  alias grun="java org.antlr.v4.runtime.misc.TestRig"
+}
+
 l() {
   # l u = light up
   # l d = light down
@@ -136,6 +155,7 @@ l() {
 gitme() { git commit --date "`stat -c %y $1`" $1; } # 2015-08-20 12:56:07.900488383 -0400
 export PYTHONSTARTUP=$HOME/.pythonrc.py
 export PYTHONPATH="$PATHPATH:/usr/local/lib/python3.5"
+#alias python='python3.5'
 
 alias minecraft="java -jar $HOME/bin/Minecraft.jar"
 
@@ -144,8 +164,6 @@ inLXC() { cat /proc/1/cgroup | grep -q lxc; }
 
 alias t='gnome-terminal&'
 alias term='gnome-terminal&'
-
-alias reindent='python /usr/share/doc/python2.7/examples/Tools/scripts/reindent.py'
 
 alias KillKyle='echo Mr. Lincoln has just been shot!'
 alias clare='clear'
@@ -157,7 +175,6 @@ alias quantum='echo QUANTUM SPOON.'
 
 alias pdf='evince'
 alias natty='nautilus `pwd` &'
-alias python3.1='/usr/local/bin/python3.1'
 
 alias printers='/usr/bin/system-config-printer &'
 alias fonts='sudo font-manager &'
@@ -166,7 +183,6 @@ alias apacheconfig='cd /etc/apache2/'
 
 alias du="du --human-readable --max-depth=1"
 
-alias python3="/usr/bin/python3.1"
 alias mkv2avi="/usr/local/bin/mkv2avi.sh"
 alias soffice=libreoffice
 
@@ -183,12 +199,12 @@ $p $HOME/bin/btsync               # btsync
 $p $HOME/bin.local                # Local bin?
 $p $HOME/Private/bin              # Encrypted bin
 $p $HOME/go/bin                   # Go
-$p $HOME/bin/processing-3.0b4     # Processing
+$p $HOME/bin/processing-3.1.1     # Processing
 unset p
 
 # Haskell:
 #export GHC_HOME=$HOME/bin/ghc-dev
-export GHC_HOME=$HOME/bin/ghc-7.10.2/inst
+export GHC_HOME=$HOME/bin/ghc-7.10.3-x86_64/inst
 
 #pathadd_unsafe $GHC_HOME/bin
 
@@ -196,13 +212,13 @@ export GHC_HOME=$HOME/bin/ghc-7.10.2/inst
 #pathadd_unsafe $HOME/.cabal/bin
 
 export GHC_HOME_IA32=$HOME/bin/ghc-7.10.2-i386/inst
-export GOPATH=~/go
+export GOPATH=~/.go
 
 alias getIP='dig +short myip.opendns.com @resolver1.opendns.com'
 alias lsblk='lsblk -o NAME,SIZE,FSTYPE,TYPE,RO,LABEL,UUID,MOUNTPOINT'
 alias dt='date +%Y-%b-%d'
 alias dircmp='diff <(cd $1 && find | sort) <(cd $2 && find | sort)' # 2015-08-20 13:11:34.196481549 -0400 
-alias chrome="/usr/bin/google-chrome-stable --incognito"
+alias chrome="/usr/bin/google-chrome-stable" # --incognito"
 alias google-chrome="chrome"
 alias google-chrome-stable="chrome"
 alias xclipv='xclip -selection clipboard'
@@ -219,4 +235,9 @@ xset b off &> /dev/null
 
 # http://unix.stackexchange.com/a/167911/121871
 shopt -s checkwinsize
+
+gitpast() {
+  git add $1
+  git commit -m "$2" --date="`stat -c %y $1`" $1
+}
 

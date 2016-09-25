@@ -7,3 +7,6 @@
 * .pythonrc
 * .vimrc
 
+# ToDo
+* locale-gen and time zone in LXC.
+
