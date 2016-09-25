@@ -1,0 +1,19 @@
+#!/bin/bash
+if [ -z "$1" ]; then
+  echo "Usage: $0 [container-name]"
+  exit
+fi
+cont=$1
+[ -z "$LXC_LOCS_CONF" ] && LXC_LOCS_CONF=/etc/lxc/locations.conf
+[ -z "$LXCPATH" ] && LXCPATH=/var/lib/lxc
+if [ -e $LXC_LOCS_CONF ]; then
+  source $LXC_LOCS_CONF
+  eval CONT=\$$cont
+  LXCINTERNET=`echo $CONT | awk -F, '{print $3}'`
+  if [ -z "$LXCPATH" ]; then
+    #echo "WARNING: $LXC_LOCS_CONF exists, but '$cont' not specified by it."
+    #echo "Solution: Using default container location of /var/lib/lxc."
+    LXCINTERNET=ethTuk
+  fi
+fi
+echo $LXCINTERNET
