@@ -11,7 +11,9 @@ dev="`interfaces | egrep "^wlp"`"
 
 netctl stop-all
 
-#killall dhcpcd
+# Occasionally required: 
+ps -e | grep -q 'dhcpcd$' && killall dhcpcd
+
 #sleep 0.05
 ip link set $dev down
 #sleep 0.05
