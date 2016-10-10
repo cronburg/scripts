@@ -1,4 +1,4 @@
-
+alias sudo='sudo -S'
 alias quit=exit
 
 # Convert github link into raw link:
@@ -72,7 +72,8 @@ up() {
 #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 
 # Removed chroot junk:
-PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+_TIME='\[\033[38;5;238m\]\t\[$(tput sgr0)\]'
+PS1=$_TIME' \[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 export PROMPT_DIRTRIM=2
 
 alias ls='ls --color=auto'
@@ -192,6 +193,7 @@ export ANDROID_SDK=/opt/android-sdk
 
 pathadd $HOME/bin
 
+# ----------------------------------------------------------------------------
 p=pathadd_ignore
 $p $ANDROID_SDK/platform-tools    # android platform tools
 $p $HOME/bin/gradle-2.6/bin       # gradle
@@ -200,16 +202,19 @@ $p $HOME/bin.local                # Local bin?
 $p $HOME/Private/bin              # Encrypted bin
 $p $HOME/go/bin                   # Go
 $p $HOME/bin/processing-3.1.1     # Processing
+$p $HOME/.gem/ruby/2.3.0/bin      # Ruby gem things (e.g. travis)
+$p $HOME/.local/bin               # e.g. ghc-mod, ghc-modi, hlint
+
+p=pathadd_unsafe_ignore
+$p $HOME/.cabal/bin               # cabal executables
 unset p
+# ----------------------------------------------------------------------------
 
 # Haskell:
 #export GHC_HOME=$HOME/bin/ghc-dev
 export GHC_HOME=$HOME/bin/ghc-7.10.3-x86_64/inst
 
 #pathadd_unsafe $GHC_HOME/bin
-
-# TODO: re-add?
-#pathadd_unsafe $HOME/.cabal/bin
 
 export GHC_HOME_IA32=$HOME/bin/ghc-7.10.2-i386/inst
 export GOPATH=~/.go
@@ -241,3 +246,6 @@ gitpast() {
   git commit -m "$2" --date="`stat -c %y $1`" $1
 }
 
+
+# added by travis gem
+[ -f /home/karl/.travis/travis.sh ] && source /home/karl/.travis/travis.sh

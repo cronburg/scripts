@@ -1,4 +1,7 @@
 
+" <Leader> keys is ','
+let mapleader=","
+
 " Allow saving of files as sudo when I forgot to start vim using sudo.
 cmap w!! w !sudo tee > /dev/null %
 
@@ -16,13 +19,106 @@ set number
 
 " http://vim.wikia.com/wiki/Restoring_indent_after_typing_hash :
 "set smartindent
-set cindent
-set cinkeys-=0#
-set indentkeys-=0#
+"set cindent
+"set cinkeys-=0#
+"set indentkeys-=0#
 
-set tabstop=8
-set shiftwidth=8
-"set expandtab
+" ---------------------- Haskell vim proto --------------------
+" http://www.stephendiehl.com/posts/vim_2016.html
+set nocompatible
+set nowrap
+set showmode
+set tw=80
+set smartcase
+set smarttab
+set smartindent
+set autoindent
+set softtabstop=2
+set incsearch
+set mouse=a
+set clipboard=unnamedplus,autoselect
+set completeopt=menuone,menu,longest
+
+set wildignore+=*\\tmp\\*,*.swp,*.swo,*.zip,.git,.cabal-sandbox
+set wildmode=longest,list,full
+set wildmenu
+set completeopt+=longest
+
+set t_Co=256
+set cmdheight=1
+
+execute pathogen#infect()
+
+" == ghc-mod ==
+
+map <silent> tw :GhcModTypeInsert<CR>
+map <silent> ts :GhcModSplitFunCase<CR>
+map <silent> tq :GhcModType<CR>
+map <silent> te :GhcModTypeClear<CR>
+
+" == supertab ==
+
+let g:SuperTabDefaultCompletionType = '<c-x><c-o>'
+
+if has("gui_running")
+  imap <c-space> <c-r>=SuperTabAlternateCompletion("\<lt>c-x>\<lt>c-o>")<cr>
+else " no gui
+  if has("unix")
+    inoremap <Nul> <c-r>=SuperTabAlternateCompletion("\<lt>c-x>\<lt>c-o>")<cr>
+  endif
+endif
+
+" == neco-ghc ==
+
+let g:haskellmode_completion_ghc = 1
+autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
+
+" == nerd-tree ==
+
+map <Leader>n :NERDTreeToggle<CR>
+
+" == tabular ==
+
+let g:haskell_tabular = 1
+
+vmap a= :Tabularize /=<CR>
+vmap a; :Tabularize /::<CR>
+vmap a- :Tabularize /-><CR>
+vmap a, :Tabularize /<-<CR>
+vmap al :Tabularize /[\[\\|,]<CR>
+
+" == ctrl-p ==
+
+map <silent> <Leader>t :CtrlP()<CR>
+noremap <leader>b<space> :CtrlPBuffer<cr>
+let g:ctrlp_custom_ignore = '\v[\/]dist$'
+
+" == syntastic ==
+map <Leader>s :SyntasticToggleMode<CR>
+
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 0
+let g:syntastic_check_on_open = 0
+let g:syntastic_check_on_wq = 0
+
+" ---------------------- ------- -----------------------------
+" Fix arrow keys in tmux
+if &term =~ '^screen'
+    " tmux will send xterm-style keys when its xterm-keys option is on
+    execute "set <xUp>=\e[1;*A"
+    execute "set <xDown>=\e[1;*B"
+    execute "set <xRight>=\e[1;*C"
+    execute "set <xLeft>=\e[1;*D"
+endif
+" ---------------------- ------- -----------------------------
+
+set tabstop=2
+set shiftwidth=2
+set expandtab
 
 " highlight search, and colorcolor
 set hlsearch
@@ -35,6 +131,7 @@ hi Search cterm=NONE ctermfg=white ctermbg=darkgreen
 set background=dark "light "dark
 
 syntax on
+filetype plugin indent on
 au BufRead,BufNewFile *.ic set filetype=scheme
 au BufRead,BufNewFile *.pde set filetype=java
 au BufRead,BufNewFile *.blog set filetype=blog
@@ -60,5 +157,5 @@ command! -nargs=+ CommandCabbr call CommandCabbr(<f-args>)
 " Use it on itself to define a simpler abbreviation for itself.
 CommandCabbr ccab CommandCabbr
 
-match ErrorMsg '\%>80v.\+'
+match ErrorMsg '\%>120v.\+'
 
