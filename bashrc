@@ -242,6 +242,10 @@ xset b off &> /dev/null
 shopt -s checkwinsize
 
 gitpast() {
+  if [[ -z "$1" || -z "$2" ]]; then
+    echo "Usage: gitpast [filename] \"[commit message]\""
+    return
+  fi
   git add $1
   git commit -m "$2" --date="`stat -c %y $1`" $1
 }

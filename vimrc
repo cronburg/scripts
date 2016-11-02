@@ -35,7 +35,7 @@ set smartindent
 set autoindent
 set softtabstop=2
 set incsearch
-set mouse=a
+"set mouse=a
 set clipboard=unnamedplus,autoselect
 set completeopt=menuone,menu,longest
 
@@ -143,6 +143,9 @@ au BufRead,BufNewFile ghci set filetype=haskell
 au BufRead,BufNewFile .ghci set filetype=haskell
 au BufRead,BufNewFile *.job set filetype=cfg
 autocmd FileType make setlocal noexpandtab
+
+autocmd FileType python setlocal shiftwidth=2
+autocmd FileType python setlocal tabstop=2
 
 command W w
 set title
