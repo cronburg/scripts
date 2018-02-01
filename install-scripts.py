@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.5
+#!/usr/bin/env python3
 # Install scripts into 
 
 from macros import *
@@ -27,5 +27,5 @@ bin_files = glob("lxc/*") + glob("misc/*") + glob("net/*") + glob("root/*")
 lib_files = ["macros.py"]
 
 kmap(install("/usr/local/bin"), bin_files)
-kmap(install("/usr/local/lib/python3.5", exe=False), lib_files)
+kmap(install("/usr/local/lib/python3", exe=False), lib_files)
 

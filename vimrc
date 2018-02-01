@@ -1,4 +1,35 @@
 
+" -----------------------------------------------------------------------------
+" Vim-Latex - Sept-6-2017
+" REQUIRED. This makes vim invoke Latex-Suite when you open a tex file.
+filetype plugin on
+
+" IMPORTANT: win32 users will need to have 'shellslash' set so that latex
+" can be called correctly.
+set shellslash
+
+" IMPORTANT: grep will sometimes skip displaying the file name if you
+" search in a single file. This will confuse Latex-Suite. Set your grep
+" program to always generate a file-name.
+set grepprg=grep\ -nH\ $*
+
+" OPTIONAL: This enables automatic indentation as you type.
+filetype indent on
+
+" OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
+" 'plaintex' instead of 'tex', which results in vim-latex not being loaded.
+" The following changes the default filetype back to 'tex':
+let g:tex_flavor='latex'
+
+" this is mostly a matter of taste. but LaTeX looks good with just a bit
+" of indentation.
+set sw=2
+" TIP: if you write your \label's as \label{fig:something}, then if you
+" type in \ref{fig: and press <C-n> you will automatically cycle through
+" all the figure labels. Very useful!
+set iskeyword+=:
+
+" -----------------------------------------------------------------------------
 " <Leader> keys is ','
 let mapleader=","
 
@@ -71,7 +102,7 @@ endif
 " == neco-ghc ==
 
 let g:haskellmode_completion_ghc = 1
-autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
+" autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
 
 " == nerd-tree ==
 
@@ -160,5 +191,5 @@ command! -nargs=+ CommandCabbr call CommandCabbr(<f-args>)
 " Use it on itself to define a simpler abbreviation for itself.
 CommandCabbr ccab CommandCabbr
 
-match ErrorMsg '\%>120v.\+'
+match ErrorMsg '\%>180v.\+'
 

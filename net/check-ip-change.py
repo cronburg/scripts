@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.5
+#!/usr/bin/env python3
 # 2015-10-20 21:14:04.417333861 -0400
 from macros import *
 

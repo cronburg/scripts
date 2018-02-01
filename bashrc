@@ -1,3 +1,8 @@
+
+print() {
+  ! [ -z "$1" ] && cat "$1" | ssh linux exec lpr -P hp212
+}
+
 alias sudo='sudo -S'
 alias quit=exit
 
@@ -94,7 +99,8 @@ export HISTTIMEFORMAT="[%F %T] "
 export HISTFILE=~/.bash_eternal_history
 PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 export GDBHISTFILE=~/.gdb_eternal_history
-export GDBHISTSIZE=70000000
+export GDBHISTSIZE=unlimited
+#70000000
 #alias gdb='/usr/bin/gdb "$@"'
 
 export LESS="-R"
@@ -112,7 +118,7 @@ alias src='source ~/.bashrc'
 
 export PADS_HASKELL=$HOME/r/pads/git
 export PADS_HOME=$HOME/r/pads/pads
-export RESEARCH=/mnt/Ragnorak/r
+export RESEARCH=$HOME/w
 p() {
   cd $PADS_HASKELL
   #pathadd_unsafe $HOME/.cabal/bin
@@ -126,7 +132,7 @@ p() {
 }
 
 j() {
-  cd $RESEARCH/permc
+  cd $RESEARCH/permchecker
   JDK=$HOME/bin/jdk1.6.0_45
   export JAVA_HOME=$JDK
   pathadd_unsafe $JDK/bin
@@ -203,10 +209,11 @@ $p $HOME/Private/bin              # Encrypted bin
 $p $HOME/go/bin                   # Go
 $p $HOME/bin/processing-3.1.1     # Processing
 $p $HOME/.gem/ruby/2.3.0/bin      # Ruby gem things (e.g. travis)
-$p $HOME/.local/bin               # e.g. ghc-mod, ghc-modi, hlint
+$p $HOME/w/bridge/dist/build/hakaru
 
 p=pathadd_unsafe_ignore
-$p $HOME/.cabal/bin               # cabal executables
+$p $HOME/.local/bin               # e.g. ghc-mod, ghc-modi, hlint
+#$p $HOME/.cabal/bin               # cabal executables
 unset p
 # ----------------------------------------------------------------------------
 
