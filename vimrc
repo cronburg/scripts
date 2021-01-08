@@ -78,7 +78,7 @@ set completeopt+=longest
 set t_Co=256
 set cmdheight=1
 
-execute pathogen#infect()
+"execute pathogen#infect()
 
 " == ghc-mod ==
 

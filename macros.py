@@ -73,8 +73,8 @@ def echo(*args):
   for a in args:
     print(a)
 
-# Oh python3, you slay me. (kmap == KarlMap)
-def kmap(fncn, lst):
+# Map over a list (python3 workaround...)
+def lmap(fncn, lst):
   ret = []
   for e in lst:
     ret.append(fncn(e))
