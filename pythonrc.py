@@ -1,6 +1,7 @@
 from __future__ import print_function
 import sys
 import os
+from math import log2, pi, sqrt
 
 # bring back execfile() to python3:
 if sys.version_info.major == 3:
@@ -20,7 +21,8 @@ if os.path.exists(macros):
   try:
     execfile(macros)
   except SyntaxError:
-    pass # TODO: fix macros in 2.7
+    # Macros broken in Python 2.7. Whatever.
+    pass
 else:
   sys.stderr.write("WARNING: Could not locate macros.py in '%s'\n"%(macros,))
 

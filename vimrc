@@ -1,12 +1,20 @@
+" :setlocal spell spelllang=en_us
+
+set nojoinspaces
+
+" Automatically run hpack to update cabal file after modifying package.yaml
+"autocmd BufWritePost package.yaml silent !hpack --silent
 
 " -----------------------------------------------------------------------------
 " Vim-Latex - Sept-6-2017
 " REQUIRED. This makes vim invoke Latex-Suite when you open a tex file.
 filetype plugin on
 
+let mapleader = ","
+
 " IMPORTANT: win32 users will need to have 'shellslash' set so that latex
 " can be called correctly.
-set shellslash
+"set shellslash
 
 " IMPORTANT: grep will sometimes skip displaying the file name if you
 " search in a single file. This will confuse Latex-Suite. Set your grep
@@ -14,12 +22,12 @@ set shellslash
 set grepprg=grep\ -nH\ $*
 
 " OPTIONAL: This enables automatic indentation as you type.
-filetype indent on
+"filetype indent on
 
 " OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
 " 'plaintex' instead of 'tex', which results in vim-latex not being loaded.
 " The following changes the default filetype back to 'tex':
-let g:tex_flavor='latex'
+"let g:tex_flavor='latex'
 
 " this is mostly a matter of taste. but LaTeX looks good with just a bit
 " of indentation.
@@ -54,6 +62,15 @@ set number
 "set cinkeys-=0#
 "set indentkeys-=0#
 
+let g:haskell_enable_quantification = 1   " to enable highlighting of `forall`
+let g:haskell_enable_recursivedo = 1      " to enable highlighting of `mdo` and `rec`
+let g:haskell_enable_arrowsyntax = 1      " to enable highlighting of `proc`
+let g:haskell_enable_pattern_synonyms = 1 " to enable highlighting of `pattern`
+let g:haskell_enable_typeroles = 1        " to enable highlighting of type roles
+let g:haskell_enable_static_pointers = 1  " to enable highlighting of `static`
+let g:haskell_backpack = 1                " to enable highlighting of backpack keywords
+let g:haskell_indent_disable = 1
+
 " ---------------------- Haskell vim proto --------------------
 " http://www.stephendiehl.com/posts/vim_2016.html
 set nocompatible
@@ -78,63 +95,63 @@ set completeopt+=longest
 set t_Co=256
 set cmdheight=1
 
-execute pathogen#infect()
+"execute pathogen#infect()
 
 " == ghc-mod ==
 
-map <silent> tw :GhcModTypeInsert<CR>
-map <silent> ts :GhcModSplitFunCase<CR>
-map <silent> tq :GhcModType<CR>
-map <silent> te :GhcModTypeClear<CR>
+"map <silent> tw :GhcModTypeInsert<CR>
+"map <silent> ts :GhcModSplitFunCase<CR>
+"map <silent> tq :GhcModType<CR>
+"map <silent> te :GhcModTypeClear<CR>
 
 " == supertab ==
 
-let g:SuperTabDefaultCompletionType = '<c-x><c-o>'
+"let g:SuperTabDefaultCompletionType = '<c-x><c-o>'
 
-if has("gui_running")
-  imap <c-space> <c-r>=SuperTabAlternateCompletion("\<lt>c-x>\<lt>c-o>")<cr>
-else " no gui
-  if has("unix")
-    inoremap <Nul> <c-r>=SuperTabAlternateCompletion("\<lt>c-x>\<lt>c-o>")<cr>
-  endif
-endif
+"if has("gui_running")
+"  imap <c-space> <c-r>=SuperTabAlternateCompletion("\<lt>c-x>\<lt>c-o>")<cr>
+"else " no gui
+"  if has("unix")
+"    inoremap <Nul> <c-r>=SuperTabAlternateCompletion("\<lt>c-x>\<lt>c-o>")<cr>
+"  endif
+"endif
 
 " == neco-ghc ==
 
-let g:haskellmode_completion_ghc = 1
+"let g:haskellmode_completion_ghc = 1
 " autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
 
 " == nerd-tree ==
 
-map <Leader>n :NERDTreeToggle<CR>
+"map <Leader>n :NERDTreeToggle<CR>
 
 " == tabular ==
 
-let g:haskell_tabular = 1
+"let g:haskell_tabular = 1
 
-vmap a= :Tabularize /=<CR>
-vmap a; :Tabularize /::<CR>
-vmap a- :Tabularize /-><CR>
-vmap a, :Tabularize /<-<CR>
-vmap al :Tabularize /[\[\\|,]<CR>
+"vmap a= :Tabularize /=<CR>
+"vmap a; :Tabularize /::<CR>
+"vmap a- :Tabularize /-><CR>
+"vmap a, :Tabularize /<-<CR>
+"vmap al :Tabularize /[\[\\|,]<CR>
 
 " == ctrl-p ==
 
-map <silent> <Leader>t :CtrlP()<CR>
-noremap <leader>b<space> :CtrlPBuffer<cr>
-let g:ctrlp_custom_ignore = '\v[\/]dist$'
+"map <silent> <Leader>t :CtrlP()<CR>
+"noremap <leader>b<space> :CtrlPBuffer<cr>
+"let g:ctrlp_custom_ignore = '\v[\/]dist$'
 
 " == syntastic ==
-map <Leader>s :SyntasticToggleMode<CR>
+"map <Leader>s :SyntasticToggleMode<CR>
 
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+"set statusline+=%#warningmsg#
+"set statusline+=%{SyntasticStatuslineFlag()}
+"set statusline+=%*
 
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 0
-let g:syntastic_check_on_open = 0
-let g:syntastic_check_on_wq = 0
+"let g:syntastic_always_populate_loc_list = 1
+"let g:syntastic_auto_loc_list = 0
+"let g:syntastic_check_on_open = 0
+"let g:syntastic_check_on_wq = 0
 
 " ---------------------- ------- -----------------------------
 " Fix arrow keys in tmux
@@ -182,14 +199,20 @@ command W w
 set title
 "set mouse=a
 
+":setlocal spell spelllang=en_us
+set spelllang=en
+set spellfile=$HOME/.vim/spell/en.utf-8.add
 "set spell spelllang=en_us
 
-function! CommandCabbr(abbreviation, expansion)
-  execute 'cabbr ' . a:abbreviation . ' <c-r>=getcmdpos() == 1 && getcmdtype() == ":" ? "' . a:expansion . '" : "' . a:abbreviation . '"<CR>'
-endfunction
-command! -nargs=+ CommandCabbr call CommandCabbr(<f-args>)
-" Use it on itself to define a simpler abbreviation for itself.
-CommandCabbr ccab CommandCabbr
+"function! CommandCabbr(abbreviation, expansion)
+"  execute 'cabbr ' . a:abbreviation . ' <c-r>=getcmdpos() == 1 && getcmdtype() == ":" ? "' . a:expansion . '" : "' . a:abbreviation . '"<CR>'
+"endfunction
+"command! -nargs=+ CommandCabbr call CommandCabbr(<f-args>)
+"" Use it on itself to define a simpler abbreviation for itself.
+"CommandCabbr ccab CommandCabbr
 
-match ErrorMsg '\%>180v.\+'
+"match ErrorMsg '\%>180v.\+'
+
+set textwidth=0
+set wrapmargin=0
 

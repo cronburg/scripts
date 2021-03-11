@@ -1,6 +1,49 @@
 
+if [ -e /usr/share/vulkan/icd.d/intel_icd.x86_64.json ]; then
+  export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/intel_icd.x86_64.json
+fi
+
+alias signal="signal-desktop-beta"
+alias trizen="MAKEFLAGS=-j8 trizen"
+
+# Write down a note. Arguments are the title of the note, for markdown.
+note() {
+  dir="$HOME/log/notes"
+  cd $dir
+  fn="$dir/$(date +%b-%d-%Y_%H:%M:%S).md"
+  if [ -e $fn ]; then
+    echo "FATAL ERROR: '$fn' already exists. Try again."
+    return
+  fi
+  echo -e "# $@\n\n" > "$fn"
+  vim "$fn" +3
+}
+
+tt() { export PROMPT_COMMAND="echo -ne \"\033]0;$*\007\""; }
+
+fixwifi() {
+  if [ "$1x" = "x" ]; then
+    echo "Usage: fixwifi [network]"
+    return
+  fi
+  netctl stop-all && \
+    rfkill unblock all && \
+    sleep 1 && \
+    netctl start $_WIFI_DEV-$1 && \
+    sleep 2 && \
+    ping 8.8.8.8
+}
+
+HISTCONTROL=ignorespace
+
+fixmouse() {
+  # TrackPoint
+  #  ⎜   ↳ TPPS/2 IBM TrackPoint id=12  [slave  pointer  (2)]
+  xinput set-int-prop 12 "Device Enabled" 8 0
+}
+
 print() {
-  ! [ -z "$1" ] && cat "$1" | ssh linux exec lpr -P hp212
+  ! [ -z "$1" ] && cat "$1" | ssh linux exec lpr -P $_LAB_PRINTER
 }
 
 alias sudo='sudo -S'
@@ -97,14 +140,18 @@ export HISTSIZE=
 export HISTFILESIZE=
 export HISTTIMEFORMAT="[%F %T] "
 export HISTFILE=~/.bash_eternal_history
+
+shopt -s histappend
+
 PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 export GDBHISTFILE=~/.gdb_eternal_history
 export GDBHISTSIZE=unlimited
-#70000000
-#alias gdb='/usr/bin/gdb "$@"'
+alias gdb='/usr/bin/gdb -q"$@"'
 
-export LESS="-R"
-export LESSOPEN='|~/.lessfilter %s'
+#export LESS="-R"
+#export LESSOPEN='|~/.lessfilter %s'
+export LESS='-RQ -z-2 -j2'
+alias dmesg='dmesg --human --color=always'
 
 export LANG=en_US.UTF-8
 export HOSTNAME=`hostname`
@@ -131,23 +178,28 @@ p() {
   #. $PADS_HOME/scripts/Q_DO_SETENV.sh
 }
 
-j() {
-  cd $RESEARCH/permchecker
-  JDK=$HOME/bin/jdk1.6.0_45
-  export JAVA_HOME=$JDK
-  pathadd_unsafe $JDK/bin
-  alias ls=ls2
-}
-alias jj='j; cd pin/source/tools/Jikes'
+# For building Hotspot:
+#JDK=$HOME/bin/jdk-13.0.1
+#export JAVA_HOME=$JDK
+#pathadd_unsafe $JDK/bin
 
-antlr() {
-  ANTLR=$HOME/w/siriusly/antlr
-  ANTLR_LIB=$ANTLR/lib/antlr-4.0-complete.jar
-  cd $ANTLR
-  export CLASSPATH=".:$ANTLR_LIB:$CLASSPATH"
-  alias antlr4="java -jar $ANTLR_LIB"
-  alias grun="java org.antlr.v4.runtime.misc.TestRig"
-}
+#j() {
+#  cd $RESEARCH/pc
+#  JDK=$HOME/bin/jdk1.6.0_45
+#  export JAVA_HOME=$JDK
+#  pathadd_unsafe $JDK/bin
+#  alias ls=ls2
+#}
+#alias jj='j; cd pin/source/tools/Jikes'
+
+#antlr() {
+#  ANTLR=$HOME/w/siriusly/antlr
+#  ANTLR_LIB=$ANTLR/lib/antlr-4.0-complete.jar
+#  cd $ANTLR
+#  export CLASSPATH=".:$ANTLR_LIB:$CLASSPATH"
+#  alias antlr4="java -jar $ANTLR_LIB"
+#  alias grun="java org.antlr.v4.runtime.misc.TestRig"
+#}
 
 l() {
   # l u = light up
@@ -164,21 +216,13 @@ export PYTHONSTARTUP=$HOME/.pythonrc.py
 export PYTHONPATH="$PATHPATH:/usr/local/lib/python3.5"
 #alias python='python3.5'
 
-alias minecraft="java -jar $HOME/bin/Minecraft.jar"
-
-inLXC() { cat /proc/1/cgroup | grep -q lxc; }
-! inLXC && mesg n
-
 alias t='gnome-terminal&'
 alias term='gnome-terminal&'
 
-alias KillKyle='echo Mr. Lincoln has just been shot!'
 alias clare='clear'
 alias clar='clear'
 alias claer='clear'
 alias lear='clear'
-alias vector='echo VECTOR BAH.'
-alias quantum='echo QUANTUM SPOON.'
 
 alias pdf='evince'
 alias natty='nautilus `pwd` &'
@@ -194,8 +238,7 @@ alias mkv2avi="/usr/local/bin/mkv2avi.sh"
 alias soffice=libreoffice
 
 #export ANDROID_SDK=$HOME/bin/android-sdk-linux
-export ANDROID_SDK=/opt/android-sdk
-
+[ -e /opt/android-sdk ] && export ANDROID_SDK=/opt/android-sdk
 
 pathadd $HOME/bin
 
@@ -210,6 +253,7 @@ $p $HOME/go/bin                   # Go
 $p $HOME/bin/processing-3.1.1     # Processing
 $p $HOME/.gem/ruby/2.3.0/bin      # Ruby gem things (e.g. travis)
 $p $HOME/w/bridge/dist/build/hakaru
+$p $HOME/.cargo/bin
 
 p=pathadd_unsafe_ignore
 $p $HOME/.local/bin               # e.g. ghc-mod, ghc-modi, hlint
@@ -230,17 +274,13 @@ alias getIP='dig +short myip.opendns.com @resolver1.opendns.com'
 alias lsblk='lsblk -o NAME,SIZE,FSTYPE,TYPE,RO,LABEL,UUID,MOUNTPOINT'
 alias dt='date +%Y-%b-%d'
 alias dircmp='diff <(cd $1 && find | sort) <(cd $2 && find | sort)' # 2015-08-20 13:11:34.196481549 -0400 
-alias chrome="/usr/bin/google-chrome-stable" # --incognito"
-alias google-chrome="chrome"
-alias google-chrome-stable="chrome"
+alias chrome="/usr/bin/google-chrome-beta" # --incognito"
+alias google-chrome="/usr/bin/google-chrome-beta"
+alias google-chrome-stable="/usr/bin/google-chrome-stable"
 alias xclipv='xclip -selection clipboard'
 alias vi!='vi `!!`'
-alias hodges='echo stupid zach, hodges are for kids'
-alias tamper='sudo wifi Tamper\!\!'
 # TODO: might be this: "sudo wifi 'tamper!!'" # 2015-10-21 11:31:36.707837464 -0400
-alias ping8='ping 8.8.8.8'
-
-#alias fixnet='sudo service network-manager restart' # Ubuntu! 2015-08-20 12:56:06.864488390 -0400
+alias ping8='bash -c "trap \"exit\" INT; while [ 1 ]; do ping -i 5 8.8.8.8; sleep 1; done"'
 
 setterm -blength 0 &> /dev/null
 xset b off &> /dev/null
@@ -250,13 +290,30 @@ shopt -s checkwinsize
 
 gitpast() {
   if [[ -z "$1" || -z "$2" ]]; then
-    echo "Usage: gitpast [filename] \"[commit message]\""
+    echo "Usage: gitpast \"[commit message]\" [filenames]"
     return
   fi
-  git add $1
-  git commit -m "$2" --date="`stat -c %y $1`" $1
+  msg="$1"; shift
+  for f in "$@"; do
+    git add $f
+    git commit -m "$msg" --date="`stat -c %y $f`" $f
+  done
 }
 
+eval "$(stack --bash-completion-script stack)"
 
 # added by travis gem
-[ -f /home/karl/.travis/travis.sh ] && source /home/karl/.travis/travis.sh
+[ -f $HOME/.travis/travis.sh ] && source $HOME/.travis/travis.sh
+
+# OPAM (Ocaml)
+. $HOME/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
+
+#source $HOME/.ghcup/env
+
+#eval "$(thefuck --alias)"
+
+# Install Ruby Gems to ~/gems
+#export GEM_HOME="$HOME/gems"
+#export PATH="$HOME/gems/bin:$PATH"
+#pathadd_unsafe $HOME/.gem/ruby/2.7.0/bin/
+
