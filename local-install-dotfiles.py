@@ -38,7 +38,7 @@ files = \
   , "pythonrc.py", "tmux.conf", "short-pwd.py"
   , "gdbinit" ]
 
-kmap(exists, files)
-kmap(link,   files)
+lmap(exists, files)
+lmap(link,   files)
 copy("gitconfig", gitFix)
 

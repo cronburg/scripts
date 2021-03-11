@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import os
-from commands import getoutput
+#from commands import getoutput
 from socket import gethostname
 # http://askubuntu.com/questions/17723/trim-the-terminal-command-prompt-working-directory/17738#17738
 hostname = gethostname()
@@ -14,6 +14,6 @@ if len(pwd) > 30:
 green = r'\[\033[01;32m\]'
 blue = r'\[\033[01;34m\]'
 nocolor = r'\[\033[00m\]'
-cmd = "PS1=%s\u@\h%s:%s%s%s\$ " % (green,nocolor,blue,pwd,nocolor)
-print cmd
+cmd = r"PS1=%s\u@\h%s:%s%s%s\$ " % (green,nocolor,blue,pwd,nocolor)
+print(cmd)
 #print '[%s@%s:%s] ' % (username, hostname, pwd)

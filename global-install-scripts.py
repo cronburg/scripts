@@ -26,6 +26,6 @@ def install(loc="/usr/local/bin", exe=True):
 bin_files = glob("lxc/*") + glob("misc/*") + glob("net/*") + glob("root/*")
 lib_files = ["macros.py"]
 
-kmap(install("/usr/local/bin"), bin_files)
-kmap(install("/usr/local/lib/python3", exe=False), lib_files)
+lmap(install("/usr/local/bin"), bin_files)
+lmap(install("/usr/local/lib/python3", exe=False), lib_files)
 
